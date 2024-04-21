@@ -22,8 +22,7 @@ public class Dashboard extends javax.swing.JFrame {
     private Form_5 form5;
     private Form_Customer formCustomer;
     private Form_Account formAccount;
-
-
+ 
     public Dashboard() {
         initComponents();
         setBackground(new Color(0, 0, 0, 0));
