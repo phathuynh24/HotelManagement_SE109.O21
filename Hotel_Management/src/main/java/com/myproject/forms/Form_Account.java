@@ -157,9 +157,7 @@ public class Form_Account extends javax.swing.JPanel {
         table.getColumnModel().getColumn(checkboxColumnIndex).setCellEditor(new CheckboxEditor(new JCheckBox()));
     }
 
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
+        private void initComponents() {
 
         panelBorder1 = new com.myproject.swings.PanelBorder();
         spTable = new javax.swing.JScrollPane();
@@ -294,13 +292,12 @@ public class Form_Account extends javax.swing.JPanel {
                 .addComponent(panelBorder1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-    }// </editor-fold>//GEN-END:initComponents
+    }
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {        
+    }
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
         if (addUserForm == null || !addUserForm.isVisible()) {
             // Nếu form thêm chưa được mở hoặc đã bị đóng, thì tạo một form mới
             addUserForm = new AddUserForm(this);
@@ -309,9 +306,9 @@ public class Form_Account extends javax.swing.JPanel {
             addUserForm.toFront();
         }
         addUserForm.setVisible(true);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {
         // Lấy các hàng đã chọn
         List<Integer> selectedRows = new ArrayList<>();
         for (int i = 0; i < table.getRowCount(); i++) {
@@ -322,20 +319,18 @@ public class Form_Account extends javax.swing.JPanel {
         }
 
         // Xóa các hàng đã chọn
-        Collections.reverse(selectedRows); // Đảo ngược danh sách các hàng đã chọn để tránh lỗi khi xóa
+        Collections.reverse(selectedRows); 
+    // Đảo ngược danh sách các hàng đã chọn để tránh lỗi khi xóa
         for (int rowIndex : selectedRows) {
             String userId = userList.get(rowIndex).getUserId();
             userList.remove(rowIndex);
             tableModel.removeRow(rowIndex);
             deleteUserDataInMongoDB(userId);
         }
-    }//GEN-LAST:event_jButton3ActionPerformed
-
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    }
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton4ActionPerformed
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    }
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
@@ -344,8 +339,7 @@ public class Form_Account extends javax.swing.JPanel {
     private com.myproject.swings.PanelBorder panelBorder1;
     private javax.swing.JScrollPane spTable;
     private com.myproject.swings.Table table;
-    // End of variables declaration//GEN-END:variables
-}
+    }
 
 // Renderer class for rendering checkboxes
 class CheckboxRenderer extends DefaultTableCellRenderer {
