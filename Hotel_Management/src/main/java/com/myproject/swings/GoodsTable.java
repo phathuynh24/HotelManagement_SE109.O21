@@ -35,6 +35,7 @@ public class GoodsTable extends JTable {
                     com.setForeground(new Color(102, 102, 102));
                     com.setFont(com.getFont().deriveFont(java.awt.Font.PLAIN));
                 }
+                setHorizontalAlignment(JLabel.CENTER);
                 return com;
 
             }

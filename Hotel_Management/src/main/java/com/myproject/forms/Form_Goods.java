@@ -11,7 +11,9 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.myproject.swings.GoodsTable;
 import com.myproject.swings.SearchText;
+import java.awt.Color;
 import java.awt.FlowLayout;
+import java.text.DecimalFormat;
 import java.util.Random;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -69,16 +71,17 @@ public class Form_Goods extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         goodsTable = new GoodsTable();
 
-        jLabel1.setFont(new java.awt.Font("sansserif", 0, 36)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(106, 106, 106));
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Hàng hóa");
-
         addButton.setText("Thêm hàng hóa");
+        addButton.setBackground(new java.awt.Color(28, 181, 224));
+        addButton.setForeground(new java.awt.Color(255, 255, 255));
 
         importButton.setText("Nhập hàng");
-
+        importButton.setBackground(new java.awt.Color(28, 181, 224));
+        importButton.setForeground(new java.awt.Color(255, 255, 255));
+        
         deleteButton.setText("Xóa hàng hóa");
+        deleteButton.setBackground(new java.awt.Color(28, 181, 224));
+        deleteButton.setForeground(new java.awt.Color(255, 255, 255));
 
         goodsTable.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][]{},
@@ -106,9 +109,6 @@ public class Form_Goods extends javax.swing.JPanel {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 578, Short.MAX_VALUE)
                                         .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addContainerGap())
-                                        .addGroup(layout.createSequentialGroup()
                                                 .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                 .addComponent(addButton)
@@ -120,7 +120,6 @@ public class Form_Goods extends javax.swing.JPanel {
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -357,14 +356,14 @@ public class Form_Goods extends javax.swing.JPanel {
             // Xóa dữ liệu cũ trong bảng
             model = (DefaultTableModel) goodsTable.getModel();
             model.setRowCount(0); // Xóa tất cả các hàng trong bảng
-
+            DecimalFormat currencyFormat = new DecimalFormat("#,###");
             // Duyệt qua các document và thêm chúng vào bảng
             for (Document doc : collection.find()) {
                 String code = doc.getString("code");
                 String name = doc.getString("name");
                 String description = doc.getString("description");
-                double importPrice = doc.getDouble("importPrice");
-                double sellPrice = doc.getDouble("sellPrice");
+                String importPrice = currencyFormat.format(doc.getDouble("importPrice"));                
+                String sellPrice = currencyFormat.format(doc.getDouble("sellPrice"));
                 String unit = doc.getString("unit");
                 int quantity = doc.getInteger("quantity");
 

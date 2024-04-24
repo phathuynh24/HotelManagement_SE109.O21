@@ -46,8 +46,6 @@ public class Menu extends javax.swing.JPanel {
         listMenu1.addItem(new Model_Menu("", "", Model_Menu.MenuType.EMPTY));
     }
 
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         panelMoving = new javax.swing.JPanel();
@@ -58,7 +56,7 @@ public class Menu extends javax.swing.JPanel {
 
         jLabel1.setFont(new java.awt.Font("sansserif", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/myproject/icons/logo.png"))); // NOI18N
+       jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/myproject/icons/logo.png"))); // NOI18N
         jLabel1.setText("Application");
 
         javax.swing.GroupLayout panelMovingLayout = new javax.swing.GroupLayout(panelMoving);
@@ -92,7 +90,7 @@ public class Menu extends javax.swing.JPanel {
                 .addGap(15, 15, 15)
                 .addComponent(listMenu1, javax.swing.GroupLayout.DEFAULT_SIZE, 414, Short.MAX_VALUE))
         );
-    }// </editor-fold>//GEN-END:initComponents
+    }
 
     @Override
     protected void paintChildren(Graphics grphcs) {
@@ -125,9 +123,7 @@ public class Menu extends javax.swing.JPanel {
         });
     }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private com.myproject.swings.ListMenu<String> listMenu1;
     private javax.swing.JPanel panelMoving;
-    // End of variables declaration//GEN-END:variables
 }

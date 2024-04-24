@@ -4,7 +4,7 @@ import com.myproject.events.EventMenuSelected;
 import com.myproject.forms.Form_1;
 import com.myproject.forms.Form_2;
 import com.myproject.forms.Form_Goods;
-import com.myproject.forms.Form_4;
+import com.myproject.forms.Form_Room;
 import com.myproject.forms.Form_RoomType;
 import com.myproject.forms.Form_Customer;
 import com.myproject.forms.Form_Account;
@@ -18,7 +18,7 @@ public class Dashboard extends javax.swing.JFrame {
     private Form_1 form1;
     private Form_2 form2;
     private Form_Goods form3;
-    private Form_4 form4;
+    private Form_Room form4;
     private Form_RoomType form5;
     private Form_Customer formCustomer;
     private Form_Account formAccount;
@@ -31,7 +31,7 @@ public class Dashboard extends javax.swing.JFrame {
         form1 = new Form_1();
         form2 = new Form_2();
         form3 = new Form_Goods();
-        form4 = new Form_4();
+        form4 = new Form_Room();
         form5 = new Form_RoomType();
         formCustomer = new Form_Customer();
         formAccount = new Form_Account();

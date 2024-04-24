@@ -4,6 +4,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.myproject.swings.SearchText;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -11,7 +12,6 @@ import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import javax.swing.border.LineBorder;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import org.bson.Document;
 
@@ -21,6 +21,8 @@ public class Form_RoomType extends javax.swing.JPanel {
     private JButton editButton;
     private JButton deleteButton;
     private JTable roomTypeTable;
+    private JScrollPane jScrollPane1;
+    private JTextField searchField;
 
     public Form_RoomType() {
         initComponents();
@@ -31,45 +33,45 @@ public class Form_RoomType extends javax.swing.JPanel {
 
     private void setupUI() {
         setLayout(new BorderLayout());
-        JPanel topPanel = new JPanel();
-        topPanel.setBackground(Color.decode("#f0f0f0")); // Màu nền cho panel top
-        topPanel.add(addButton);
-        topPanel.add(editButton);
-        topPanel.add(deleteButton);
-        add(topPanel, BorderLayout.NORTH);
-
-        roomTypeTable.setSelectionBackground(Color.decode("#e0e0e0")); // Màu nền khi chọn hàng
-        roomTypeTable.setSelectionForeground(Color.black); // Màu chữ khi chọn hàng
-        roomTypeTable.setRowHeight(30); // Đặt chiều cao hàng
-        roomTypeTable.setFont(new Font("Arial", Font.PLAIN, 14)); // Đặt font cho bảng
-        roomTypeTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14)); // Đặt font cho header của bảng
-        roomTypeTable.getTableHeader().setReorderingAllowed(false); // Không cho phép kéo thả cột
-
-        // Đặt màu sắc cho các cột
-        DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer();
-        headerRenderer.setBackground(Color.decode("#ffffff")); // Màu nền cho header của table
-        headerRenderer.setHorizontalAlignment(SwingConstants.CENTER); // Canh giữa text
-        roomTypeTable.getTableHeader().setDefaultRenderer(headerRenderer);
-
-        // Đặt màu sắc và canh giữa text cho các ô cột
-        DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                if (row % 2 == 0) {
-                    component.setBackground(Color.decode("#f2f2f2")); // Màu nền cho hàng chẵn
-                } else {
-                    component.setBackground(Color.white); // Màu nền cho hàng lẻ
-                }
-                setHorizontalAlignment(SwingConstants.CENTER); // Canh giữa text
-                return component;
-            }
-        };
-        roomTypeTable.setDefaultRenderer(Object.class, cellRenderer);
-
-        add(new JScrollPane(roomTypeTable), BorderLayout.CENTER);
+        searchField = new SearchText();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        
+        jScrollPane1.setViewportView(roomTypeTable);
+        
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 578, Short.MAX_VALUE)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(addButton)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(editButton)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(deleteButton)
+                                                .addGap(20, 20, 20))))
+        );
+        layout.setVerticalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(addButton)
+                                        .addComponent(editButton)
+                                        .addComponent(deleteButton))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
+                                .addContainerGap())
+        );
     }
-
+    
     private void setupEvents() {
         addButton.addActionListener(new ActionListener() {
             @Override
@@ -111,6 +113,13 @@ public class Form_RoomType extends javax.swing.JPanel {
                 } else {
                     JOptionPane.showMessageDialog(Form_RoomType.this, "Vui lòng chọn một loại phòng để xóa.");
                 }
+            }
+        });
+    
+        searchField.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+//                searchGoods(searchField.getText());
             }
         });
     }
@@ -300,55 +309,16 @@ public class Form_RoomType extends javax.swing.JPanel {
     }
 
     private void initComponents() {
-        addButton = new JButton("Thêm");
-        editButton = new JButton("Sửa");
-        deleteButton = new JButton("Xóa");
-        roomTypeTable = new JTable();
+        addButton = new JButton("Thêm loại phòng");
+        addButton.setBackground(new java.awt.Color(28, 181, 224));
+        addButton.setForeground(new java.awt.Color(255, 255, 255));
+        editButton = new JButton("Sửa loại phòng");
+        editButton.setBackground(new java.awt.Color(28, 181, 224));
+        editButton.setForeground(new java.awt.Color(255, 255, 255));
+        deleteButton = new JButton("Xóa loại phòng");
+        deleteButton.setBackground(new java.awt.Color(28, 181, 224));
+        deleteButton.setForeground(new java.awt.Color(255, 255, 255));
+        roomTypeTable = new com.myproject.swings.GoodsTable();
         
-        addButton.setPreferredSize(new Dimension(100, 40));
-        editButton.setPreferredSize(new Dimension(100, 40));
-        deleteButton.setPreferredSize(new Dimension(100, 40));
-
-        // Thiết lập màu sắc cho các button
-        addButton.setBackground(Color.decode("#4CAF50")); // Màu xanh lá cây
-        addButton.setForeground(Color.white);
-        addButton.setBorder(new LineBorder(Color.BLACK, 2));// Màu chữ trắng
-        editButton.setBackground(Color.decode("#FFC107")); // Màu cam
-        editButton.setForeground(Color.black); // Màu chữ đen
-        editButton.setBorder(new LineBorder(Color.BLACK, 2));
-        deleteButton.setBackground(Color.decode("#F44336")); // Màu đỏ
-        deleteButton.setForeground(Color.white); // Màu chữ trắng
-        deleteButton.setBorder(new LineBorder(Color.BLACK, 2)); // Viền màu đen, độ dày 2 pixel
-
-
-        GroupLayout layout = new GroupLayout(this);
-        setLayout(layout);
-        layout.setHorizontalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                        .addComponent(roomTypeTable, GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
-                                        .addGroup(layout.createSequentialGroup()
-                                                .addComponent(addButton)
-                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(editButton)
-                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(deleteButton)))
-                                .addContainerGap())
-        );
-
-        layout.setVerticalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                        .addComponent(addButton)
-                                        .addComponent(editButton)
-                                        .addComponent(deleteButton))
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(roomTypeTable, GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE)
-                                .addContainerGap())
-        );
     }
 }
