@@ -32,6 +32,7 @@ public class Form_Customer extends javax.swing.JPanel {
 
     public Form_Customer() {
         initComponents();
+        fetchDataFromMongoDB();
     }
 
     private void initComponents() {
@@ -39,12 +40,18 @@ public class Form_Customer extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         customerTable = new com.myproject.swings.GoodsTable();
         jPanelAddCustomer = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jCustomerNameTextField = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        jCustomerTypeTextField = new javax.swing.JComboBox();
-        jCustomerCapacityTextField = new javax.swing.JTextField();
+        jCustomerGenderTextField = new javax.swing.JComboBox();
+        jCustomerPhoneTextField = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jCustomerDateTextField = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        jCustomerTypeTextField = new javax.swing.JComboBox();
         btnSearch = new javax.swing.JButton();
         btnAdd = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
@@ -52,8 +59,13 @@ public class Form_Customer extends javax.swing.JPanel {
         
 
         jScrollPane1.setBackground(new java.awt.Color(28,181,224));
-        jCustomerTypeTextField.addItem("Thường");
-        jCustomerTypeTextField.addItem("VIP");
+        jCustomerGenderTextField.addItem("Nam");
+        jCustomerGenderTextField.addItem("Nữ");
+        
+        jCustomerTypeTextField.addItem("Dưới 12 tuổi");
+        jCustomerTypeTextField.addItem("12 đến 15 tuổi");
+        jCustomerTypeTextField.addItem("16 đến 18 tuổi");
+        jCustomerTypeTextField.addItem("Trên 18 tuổi");
 
         setBackground(new java.awt.Color(255, 255, 255));
         setForeground(new java.awt.Color(255, 255, 255));
@@ -63,7 +75,7 @@ public class Form_Customer extends javax.swing.JPanel {
 
             },
             new String [] {
-                "ID khách", "Họ tên", "Giới tính", "SĐT", "ID phòng", "Ngày sinh"
+                "ID khách", "Họ tên", "Giới tính", "SĐT", "Loại khách hàng", "Ngày sinh"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -83,53 +95,93 @@ public class Form_Customer extends javax.swing.JPanel {
 
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Họ tên khách");
-
+        
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel6.setText("Mã khách hàng");
+        
+        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel7.setText("");
 
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Giới tính");
 
-        jCustomerCapacityTextField.setToolTipText("");
+        jCustomerPhoneTextField.setToolTipText("");
 
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("SĐT");
-
+        
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel4.setText("Ngày sinh");
+        
+        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel5.setText("Loại khách hàng");
 
         javax.swing.GroupLayout jPanelAddCustomerLayout = new javax.swing.GroupLayout(jPanelAddCustomer);
         jPanelAddCustomer.setLayout(jPanelAddCustomerLayout);
+        
         jPanelAddCustomerLayout.setHorizontalGroup(
             jPanelAddCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelAddCustomerLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanelAddCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7)
+                .addGroup(jPanelAddCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jCustomerNameTextField)
-                    .addGroup(jPanelAddCustomerLayout.createSequentialGroup()
-                        .addGroup(jPanelAddCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jCustomerTypeTextField, javax.swing.GroupLayout.Alignment.LEADING))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanelAddCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jCustomerCapacityTextField)
+                        
+                .addGroup(jPanelAddCustomerLayout.createSequentialGroup()
+                    .addGroup(jPanelAddCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jCustomerGenderTextField, javax.swing.GroupLayout.Alignment.LEADING))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(jPanelAddCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jCustomerPhoneTextField)
                 
-                            
-                        )))));
+                .addGroup(jPanelAddCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jCustomerTypeTextField)
+                        
+                .addGroup(jPanelAddCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jCustomerDateTextField)
+                        ))))))));
+        
         jPanelAddCustomerLayout.setVerticalGroup(
             jPanelAddCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelAddCustomerLayout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(jLabel6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    
                 .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)                   
+                .addComponent(jCustomerNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)                
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jCustomerNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                
                 .addGroup(jPanelAddCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    
                 .addGroup(jPanelAddCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jCustomerTypeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jCustomerCapacityTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                
+                    .addComponent(jCustomerGenderTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jCustomerPhoneTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))                    
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    
+                .addComponent(jLabel5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)                   
+                .addComponent(jCustomerTypeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)                   
+                .addComponent(jCustomerDateTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+
             .addContainerGap(23, Short.MAX_VALUE))
         );
 
@@ -218,6 +270,19 @@ public class Form_Customer extends javax.swing.JPanel {
         sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchText)); // Tìm kiếm theo thông tin người dùng nhập
     }
     
+    private String generateCustomerID(MongoCollection<Document> collection) {
+        FindIterable<Document> cursor = collection.find();
+        
+        String id = "KH10000";
+        for (Document document : cursor) {           
+            String temp = document.getString("CustomerID");           
+            if (temp.compareTo(id) >0){
+                id = temp;
+            }
+        }
+        int num = Integer.parseInt(id.substring(2)) + 1;
+        return "KH" + num ;
+    }
     
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {                                         
         String uri = "mongodb+srv://HotelGroup:xfwl2Y6oahXJugda@cluster0.awr6sf9.mongodb.net/";
@@ -228,26 +293,35 @@ public class Form_Customer extends javax.swing.JPanel {
 
             // Chọn hoặc tạo collection
             MongoCollection<Document> collection = database.getCollection("Customer");
+            
+            //Tạo mã khách hàng
+            String id = generateCustomerID(collection);
+            jLabel7.setText(id);
 
             //Hiển thị dialog để người dùng thêm phòng
             JOptionPane.showInputDialog(jPanelAddCustomer);
             
                 // Lấy các giá trị từ dialog
                 String name = jCustomerNameTextField.getText();
-                String capacity = jCustomerCapacityTextField.getText();
+                String phone = jCustomerPhoneTextField.getText();
+                String gender = (String) jCustomerGenderTextField.getSelectedItem();
+                String date = jCustomerDateTextField.getText();
                 String type = (String) jCustomerTypeTextField.getSelectedItem();
 
-                if ("".equals(name) || "".equals(capacity) || "".equals(type)) {
+                if ("".equals(name) || "".equals(phone) || "".equals(gender) || "".equals(date) || "".equals(type)) {
                     JOptionPane.showMessageDialog(this, "Vui lòng không bỏ trống thông tin để thêm khách thành công!");
                 } else {                        
                     //Thêm mới dữ liệu
                     collection.insertOne(     
-                        new Document(new Document("CustomerName", name)
-                            .append("Capacity", capacity)
-                            .append("CustomerType", type)
+                        new Document(new Document("CustomerID", id)
+                            .append("CustomerName", name)                          
+                            .append("Gender", gender)
+                            .append("Phone", phone)
+                            .append("Type", type)
+                            .append("CustomerDate", date)
                         )
                     );
-                    fetchDataFromMongoDB();
+                    fetchDataFromMongoDB();                   
                 } 
             
             clearInput();
@@ -285,9 +359,12 @@ public class Form_Customer extends javax.swing.JPanel {
     
     private void clearInput(){
         jCustomerNameTextField.setText("");
+        jCustomerGenderTextField.setSelectedIndex(0);
+        jCustomerPhoneTextField.setText("");
+        jCustomerDateTextField.setText("");
         jCustomerTypeTextField.setSelectedIndex(0);
-        jCustomerCapacityTextField.setText("");
     }
+    
     
     private void fetchDataFromMongoDB(){
         try (MongoClient mongoClient = MongoClients.create("mongodb+srv://HotelGroup:xfwl2Y6oahXJugda@cluster0.awr6sf9.mongodb.net/")) {
@@ -303,12 +380,15 @@ public class Form_Customer extends javax.swing.JPanel {
             
             // Tạo một Document mới chứa dữ liệu bạn muốn thêm            
             for (Document document : cursor) {
-                String value1 = document.getString("CustomerName");
-                String value2 = document.getString("Capacity");
-                String value3 = document.getString("CustomerType");
+                String value1 = document.getString("CustomerID");
+                String value2 = document.getString("CustomerName");
+                String value3 = document.getString("Gender");
+                String value4 = document.getString("Phone");
+                String value5 = document.getString("Type");
+                String value6 = document.getString("CustomerDate");
 
                 // Thêm hàng mới vào tableModel
-                model.addRow(new Object[]{value1, value2, value3});
+                model.addRow(new Object[]{value1, value2, value3, value4, value5, value6});
             }
 
         } catch (Exception e) {
@@ -328,14 +408,16 @@ public class Form_Customer extends javax.swing.JPanel {
             MongoCollection<Document> collection = database.getCollection("Customer");
 
             // Lấy tên phòng từ hàng được chọn trong bảng
-            String name = (String) customerTable.getValueAt(selectedRow, 0);
+            String id = (String) customerTable.getValueAt(selectedRow, 0);
+            String room = (String) customerTable.getValueAt(selectedRow, 4);
 
             // Xóa hàng được chọn từ MongoDB
-            collection.deleteOne(new Document("CustomerName", name));
+            collection.deleteOne(new Document("CustomerID", id));                          
 
             // Xóa hàng được chọn từ bảng
             DefaultTableModel model = (DefaultTableModel) customerTable.getModel();
             model.removeRow(selectedRow);
+            
             
         } catch (Exception e) {
             e.printStackTrace();    
@@ -353,32 +435,40 @@ public class Form_Customer extends javax.swing.JPanel {
             MongoCollection<Document> collection = database.getCollection("Customer");
 
             // Lấy thông tin phòng từ hàng được chọn trong bảng        
-            String name = (String) customerTable.getValueAt(selectedRow, 0);
+            String id = (String) customerTable.getValueAt(selectedRow, 0);
+            jLabel7.setText(id);
             
             //Hiển thị dialog để người dùng chỉnh sửa phòng
             JOptionPane.showInputDialog(jPanelAddCustomer);
             
                 // Lấy các giá trị mới từ dialog
                 String newName = jCustomerNameTextField.getText();
-                String newCapacity = jCustomerCapacityTextField.getText();
+                String newPhone = jCustomerPhoneTextField.getText();
+                String newGender = (String) jCustomerGenderTextField.getSelectedItem();
+                String newDate = jCustomerDateTextField.getText();
                 String newType = (String) jCustomerTypeTextField.getSelectedItem();
 
-                if ("".equals(newName) || "".equals(newCapacity) || "".equals(newType)) {
+                if ("".equals(newName) || "".equals(newPhone) || "".equals(newGender) || "".equals(newDate) || "".equals(newType)) {
                     JOptionPane.showMessageDialog(this, "Vui lòng không bỏ trống thông tin để cập nhật thông tin khách thành công!");
                 } else {    
                     // Cập nhật thông tin mới vào model của bảng
-                    customerTable.setValueAt(newName, selectedRow, 0); 
-                    customerTable.setValueAt(newCapacity, selectedRow, 1); 
-                    customerTable.setValueAt(newType, selectedRow, 2); 
+                    customerTable.setValueAt(newName, selectedRow, 1); 
+                    customerTable.setValueAt(newGender, selectedRow, 2); 
+                    customerTable.setValueAt(newPhone, selectedRow, 3); 
+                    customerTable.setValueAt(newType, selectedRow, 4);
+                    customerTable.setValueAt(newDate, selectedRow, 5);
                     
                     // Tìm và cập nhật dòng tương ứng trong cơ sở dữ liệu
                     collection.updateOne(
-                        new Document("CustomerName", name),
-                        new Document("$set", new Document("CustomerName", newName)
-                            .append("Capacity", newCapacity)
-                            .append("CustomerType", newType)
+                        new Document("CustomerID", id),
+                        new Document("$set", new Document("CustomerID", id)
+                            .append("CustomerName", newName)
+                            .append("CustomerGender", newGender)
+                            .append("Phone", newPhone)
+                            .append("Type", newType)                  
+                            .append("CustomerDate", newDate)
                         )
-                    );
+                    );                   
                     clearInput();
                 } 
             
@@ -386,6 +476,8 @@ public class Form_Customer extends javax.swing.JPanel {
             e.printStackTrace();
         }
     }
+
+   
     
     private javax.swing.JButton btnSearch;
     private javax.swing.JButton btnAdd;
@@ -395,12 +487,20 @@ public class Form_Customer extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanelAddCustomer;
-    private javax.swing.JTextField jCustomerCapacityTextField;
+    private javax.swing.JTextField jCustomerPhoneTextField;
     private javax.swing.JTextField jCustomerNameTextField;
+    private javax.swing.JComboBox jCustomerGenderTextField;
+    private javax.swing.JTextField jCustomerDateTextField;
     private javax.swing.JComboBox jCustomerTypeTextField;
 
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable customerTable;
     private javax.swing.JTextField searchField;
 }
+
+

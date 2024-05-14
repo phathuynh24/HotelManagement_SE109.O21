@@ -28,8 +28,9 @@ import javax.swing.table.TableRowSorter;
 import org.bson.Document;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Projections;
+import com.myproject.forms.Form_Customer;
 
-public class Form_Room extends javax.swing.JPanel {
+public class Form_Room extends javax.swing.JPanel  {
 
     public Form_Room() {
         initComponents();    
@@ -47,6 +48,8 @@ public class Form_Room extends javax.swing.JPanel {
         jRoomTypeTextField = new javax.swing.JComboBox();
         jRoomCapacityTextField = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jRoomStatusTextField = new javax.swing.JComboBox();
         btnSearch = new javax.swing.JButton();
         btnAdd = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
@@ -56,6 +59,9 @@ public class Form_Room extends javax.swing.JPanel {
         jScrollPane1.setBackground(new java.awt.Color(28,181,224));
         jRoomTypeTextField.addItem("Thường");
         jRoomTypeTextField.addItem("VIP");
+        jRoomStatusTextField.addItem("Available");
+        jRoomStatusTextField.addItem("Booked");
+        jRoomStatusTextField.addItem("Not available");
 
         setBackground(new java.awt.Color(255, 255, 255));
         setForeground(new java.awt.Color(255, 255, 255));
@@ -65,11 +71,11 @@ public class Form_Room extends javax.swing.JPanel {
 
             },
             new String [] {
-                "Tên Phòng", "Sức chứa", "Loại phòng"
+                "Tên Phòng", "Sức chứa", "Loại phòng", "Trạng thái"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false
+                false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -94,6 +100,9 @@ public class Form_Room extends javax.swing.JPanel {
 
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Sức chứa");
+        
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel4.setText("Trạng thái");
 
 
         javax.swing.GroupLayout jPanelAddRoomLayout = new javax.swing.GroupLayout(jPanelAddRoom);
@@ -110,11 +119,15 @@ public class Form_Room extends javax.swing.JPanel {
                             .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jRoomTypeTextField, javax.swing.GroupLayout.Alignment.LEADING))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanelAddRoomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jRoomCapacityTextField, javax.swing.GroupLayout.Alignment.LEADING))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        
                         .addGroup(jPanelAddRoomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jRoomCapacityTextField)
-                
-                            
+                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jRoomStatusTextField)  
+                                                         
                         )))));
         jPanelAddRoomLayout.setVerticalGroup(
             jPanelAddRoomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -126,10 +139,12 @@ public class Form_Room extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanelAddRoomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jLabel3))
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanelAddRoomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jRoomTypeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jRoomStatusTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jRoomCapacityTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 
             .addContainerGap(23, Short.MAX_VALUE))
@@ -238,8 +253,9 @@ public class Form_Room extends javax.swing.JPanel {
                 String name = jRoomNameTextField.getText();
                 String capacity = jRoomCapacityTextField.getText();
                 String type = (String) jRoomTypeTextField.getSelectedItem();
+                String status = (String) jRoomStatusTextField.getSelectedItem();
 
-                if ("".equals(name) || "".equals(capacity) || "".equals(type)) {
+                if ("".equals(name) || "".equals(capacity) || "".equals(type) || "".equals(status)) {
                     JOptionPane.showMessageDialog(this, "Vui lòng không bỏ trống thông tin để thêm phòng thành công!");
                 } else {                        
                     //Thêm mới dữ liệu
@@ -247,6 +263,7 @@ public class Form_Room extends javax.swing.JPanel {
                         new Document(new Document("RoomName", name)
                             .append("Capacity", capacity)
                             .append("RoomType", type)
+                            .append("Status", status)
                         )
                     );
                     fetchDataFromMongoDB();
@@ -289,6 +306,7 @@ public class Form_Room extends javax.swing.JPanel {
         jRoomNameTextField.setText("");
         jRoomTypeTextField.setSelectedIndex(0);
         jRoomCapacityTextField.setText("");
+        jRoomStatusTextField.setSelectedIndex(0);
     }
     
     private void fetchDataFromMongoDB(){
@@ -308,9 +326,10 @@ public class Form_Room extends javax.swing.JPanel {
                 String value1 = document.getString("RoomName");
                 String value2 = document.getString("Capacity");
                 String value3 = document.getString("RoomType");
+                String value4 = document.getString("Status");
 
                 // Thêm hàng mới vào tableModel
-                model.addRow(new Object[]{value1, value2, value3});
+                model.addRow(new Object[]{value1, value2, value3, value4});
             }
 
         } catch (Exception e) {
@@ -364,14 +383,16 @@ public class Form_Room extends javax.swing.JPanel {
                 String newName = jRoomNameTextField.getText();
                 String newCapacity = jRoomCapacityTextField.getText();
                 String newType = (String) jRoomTypeTextField.getSelectedItem();
+                String newStatus = (String) jRoomTypeTextField.getSelectedItem();
 
-                if ("".equals(newName) || "".equals(newCapacity) || "".equals(newType)) {
+                if ("".equals(newName) || "".equals(newCapacity) || "".equals(newType) || "".equals(newStatus)) {
                     JOptionPane.showMessageDialog(this, "Vui lòng không bỏ trống thông tin để cập nhật phòng thành công!");
                 } else {    
                     // Cập nhật thông tin mới vào model của bảng
                     roomTable.setValueAt(newName, selectedRow, 0); 
                     roomTable.setValueAt(newCapacity, selectedRow, 1); 
                     roomTable.setValueAt(newType, selectedRow, 2); 
+                    roomTable.setValueAt(newStatus, selectedRow, 3);
                     
                     // Tìm và cập nhật dòng tương ứng trong cơ sở dữ liệu
                     collection.updateOne(
@@ -379,6 +400,7 @@ public class Form_Room extends javax.swing.JPanel {
                         new Document("$set", new Document("RoomName", newName)
                             .append("Capacity", newCapacity)
                             .append("RoomType", newType)
+                            .append("Status", newStatus)
                         )
                     );
                     clearInput();
@@ -388,6 +410,7 @@ public class Form_Room extends javax.swing.JPanel {
             e.printStackTrace();
         }
     }
+
     
     private javax.swing.JButton btnSearch;
     private javax.swing.JButton btnAdd;
@@ -397,10 +420,12 @@ public class Form_Room extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanelAddRoom;
     private javax.swing.JTextField jRoomCapacityTextField;
     private javax.swing.JTextField jRoomNameTextField;
     private javax.swing.JComboBox jRoomTypeTextField;
+    private javax.swing.JComboBox jRoomStatusTextField;
 
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable roomTable;
