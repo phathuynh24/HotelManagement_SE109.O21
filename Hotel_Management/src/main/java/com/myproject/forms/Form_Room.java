@@ -29,6 +29,7 @@ import org.bson.Document;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Projections;
 import com.myproject.forms.Form_Customer;
+import javax.swing.ImageIcon;
 
 public class Form_Room extends javax.swing.JPanel  {
 
@@ -247,7 +248,10 @@ public class Form_Room extends javax.swing.JPanel  {
             MongoCollection<Document> collection = database.getCollection("Room");
 
             //Hiển thị dialog để người dùng thêm phòng
-            JOptionPane.showInputDialog(jPanelAddRoom);
+            ImageIcon icon = new ImageIcon();
+            
+            JOptionPane.showMessageDialog(this, jPanelAddRoom, "Thêm phòng", 
+                    JOptionPane.INFORMATION_MESSAGE, icon);
             
                 // Lấy các giá trị từ dialog
                 String name = jRoomNameTextField.getText();
@@ -375,9 +379,16 @@ public class Form_Room extends javax.swing.JPanel  {
 
             // Lấy thông tin phòng từ hàng được chọn trong bảng        
             String name = (String) roomTable.getValueAt(selectedRow, 0);
+            String capacity = (String) roomTable.getValueAt(selectedRow, 1);
+            
+            jRoomNameTextField.setText(name);
+            jRoomCapacityTextField.setText(capacity);
             
             //Hiển thị dialog để người dùng chỉnh sửa phòng
-            JOptionPane.showInputDialog(jPanelAddRoom);
+            ImageIcon icon = new ImageIcon();
+            
+            JOptionPane.showMessageDialog(this, jPanelAddRoom, "Sửa thông tin phòng", 
+                    JOptionPane.INFORMATION_MESSAGE, icon);
             
                 // Lấy các giá trị mới từ dialog
                 String newName = jRoomNameTextField.getText();

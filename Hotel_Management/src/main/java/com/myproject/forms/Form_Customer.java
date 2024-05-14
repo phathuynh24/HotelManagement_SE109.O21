@@ -27,6 +27,7 @@ import javax.swing.table.TableRowSorter;
 import org.bson.Document;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Projections;
+import javax.swing.ImageIcon;
 
 public class Form_Customer extends javax.swing.JPanel {
 
@@ -36,12 +37,15 @@ public class Form_Customer extends javax.swing.JPanel {
     }
 
     private void initComponents() {
+     
         searchField = new SearchText();
         jScrollPane1 = new javax.swing.JScrollPane();
         customerTable = new com.myproject.swings.GoodsTable();
         jPanelAddCustomer = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jCustomerCCTextField = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jCustomerNameTextField = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
@@ -75,11 +79,11 @@ public class Form_Customer extends javax.swing.JPanel {
 
             },
             new String [] {
-                "ID khách", "Họ tên", "Giới tính", "SĐT", "Loại khách hàng", "Ngày sinh"
+                "ID khách", "Họ tên", "CCCD", "Giới tính", "SĐT", "Loại khách hàng", "Ngày sinh"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -95,6 +99,10 @@ public class Form_Customer extends javax.swing.JPanel {
 
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Họ tên khách");
+        
+        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel8.setText("CCCD");
+        
         
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("Mã khách hàng");
@@ -129,6 +137,9 @@ public class Form_Customer extends javax.swing.JPanel {
                 .addGroup(jPanelAddCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jCustomerNameTextField)
+                .addGroup(jPanelAddCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jCustomerCCTextField)
                         
                 .addGroup(jPanelAddCustomerLayout.createSequentialGroup()
                     .addGroup(jPanelAddCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -146,7 +157,7 @@ public class Form_Customer extends javax.swing.JPanel {
                 .addGroup(jPanelAddCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jCustomerDateTextField)
-                        ))))))));
+                        )))))))));
         
         jPanelAddCustomerLayout.setVerticalGroup(
             jPanelAddCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -160,6 +171,11 @@ public class Form_Customer extends javax.swing.JPanel {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)                   
                 .addComponent(jCustomerNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)                
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    
+                .addComponent(jLabel8)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)                   
+                .addComponent(jCustomerCCTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)                
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 
                 .addGroup(jPanelAddCustomerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -297,24 +313,30 @@ public class Form_Customer extends javax.swing.JPanel {
             //Tạo mã khách hàng
             String id = generateCustomerID(collection);
             jLabel7.setText(id);
-
-            //Hiển thị dialog để người dùng thêm phòng
-            JOptionPane.showInputDialog(jPanelAddCustomer);
             
+            //Hiển thị dialog để người dùng thêm phòng
+            ImageIcon icon = new ImageIcon();
+            
+            JOptionPane.showMessageDialog(this, jPanelAddCustomer, "Thêm khách hàng", 
+                    JOptionPane.INFORMATION_MESSAGE, icon);
+
                 // Lấy các giá trị từ dialog
                 String name = jCustomerNameTextField.getText();
+                String cccd = jCustomerCCTextField.getText();
                 String phone = jCustomerPhoneTextField.getText();
                 String gender = (String) jCustomerGenderTextField.getSelectedItem();
                 String date = jCustomerDateTextField.getText();
                 String type = (String) jCustomerTypeTextField.getSelectedItem();
 
-                if ("".equals(name) || "".equals(phone) || "".equals(gender) || "".equals(date) || "".equals(type)) {
+                if ("".equals(name) || "".equals(phone) || "".equals(gender) || "".equals(date) || "".equals(type)
+                        || "".equals(cccd)) {
                     JOptionPane.showMessageDialog(this, "Vui lòng không bỏ trống thông tin để thêm khách thành công!");
                 } else {                        
                     //Thêm mới dữ liệu
                     collection.insertOne(     
                         new Document(new Document("CustomerID", id)
-                            .append("CustomerName", name)                          
+                            .append("CustomerName", name)
+                            .append("CCCD", cccd)
                             .append("Gender", gender)
                             .append("Phone", phone)
                             .append("Type", type)
@@ -382,13 +404,15 @@ public class Form_Customer extends javax.swing.JPanel {
             for (Document document : cursor) {
                 String value1 = document.getString("CustomerID");
                 String value2 = document.getString("CustomerName");
+                String value7 = document.getString("CCCD");
                 String value3 = document.getString("Gender");
                 String value4 = document.getString("Phone");
                 String value5 = document.getString("Type");
                 String value6 = document.getString("CustomerDate");
+                
 
                 // Thêm hàng mới vào tableModel
-                model.addRow(new Object[]{value1, value2, value3, value4, value5, value6});
+                model.addRow(new Object[]{value1, value2, value7, value3, value4, value5, value6});
             }
 
         } catch (Exception e) {
@@ -409,7 +433,6 @@ public class Form_Customer extends javax.swing.JPanel {
 
             // Lấy tên phòng từ hàng được chọn trong bảng
             String id = (String) customerTable.getValueAt(selectedRow, 0);
-            String room = (String) customerTable.getValueAt(selectedRow, 4);
 
             // Xóa hàng được chọn từ MongoDB
             collection.deleteOne(new Document("CustomerID", id));                          
@@ -436,33 +459,51 @@ public class Form_Customer extends javax.swing.JPanel {
 
             // Lấy thông tin phòng từ hàng được chọn trong bảng        
             String id = (String) customerTable.getValueAt(selectedRow, 0);
+            String name = (String) customerTable.getValueAt(selectedRow, 1);
+            String cccd = (String) customerTable.getValueAt(selectedRow, 2);
+    
+            String phone = (String) customerTable.getValueAt(selectedRow, 4);
+
+            String date = (String) customerTable.getValueAt(selectedRow, 6);
+            
             jLabel7.setText(id);
+            jCustomerNameTextField.setText(name);
+            jCustomerCCTextField.setText(cccd);
+            jCustomerPhoneTextField.setText(phone);
+            jCustomerDateTextField.setText(date);
             
             //Hiển thị dialog để người dùng chỉnh sửa phòng
-            JOptionPane.showInputDialog(jPanelAddCustomer);
+            ImageIcon icon = new ImageIcon();
+            
+            JOptionPane.showMessageDialog(this, jPanelAddCustomer, "Sửa thông tin khách hàng", 
+                    JOptionPane.INFORMATION_MESSAGE, icon);
             
                 // Lấy các giá trị mới từ dialog
                 String newName = jCustomerNameTextField.getText();
+                String newCccd = jCustomerCCTextField.getText();
                 String newPhone = jCustomerPhoneTextField.getText();
                 String newGender = (String) jCustomerGenderTextField.getSelectedItem();
                 String newDate = jCustomerDateTextField.getText();
                 String newType = (String) jCustomerTypeTextField.getSelectedItem();
 
-                if ("".equals(newName) || "".equals(newPhone) || "".equals(newGender) || "".equals(newDate) || "".equals(newType)) {
+                if ("".equals(newName) || "".equals(newPhone) || "".equals(newGender) || "".equals(newDate) 
+                        || "".equals(newType) || "".equals(newCccd)) {
                     JOptionPane.showMessageDialog(this, "Vui lòng không bỏ trống thông tin để cập nhật thông tin khách thành công!");
                 } else {    
                     // Cập nhật thông tin mới vào model của bảng
                     customerTable.setValueAt(newName, selectedRow, 1); 
-                    customerTable.setValueAt(newGender, selectedRow, 2); 
-                    customerTable.setValueAt(newPhone, selectedRow, 3); 
-                    customerTable.setValueAt(newType, selectedRow, 4);
-                    customerTable.setValueAt(newDate, selectedRow, 5);
+                    customerTable.setValueAt(newCccd, selectedRow, 2);
+                    customerTable.setValueAt(newGender, selectedRow, 3); 
+                    customerTable.setValueAt(newPhone, selectedRow, 4); 
+                    customerTable.setValueAt(newType, selectedRow, 5);
+                    customerTable.setValueAt(newDate, selectedRow, 6);
                     
                     // Tìm và cập nhật dòng tương ứng trong cơ sở dữ liệu
                     collection.updateOne(
                         new Document("CustomerID", id),
                         new Document("$set", new Document("CustomerID", id)
                             .append("CustomerName", newName)
+                            .append("CCCD", newCccd)
                             .append("CustomerGender", newGender)
                             .append("Phone", newPhone)
                             .append("Type", newType)                  
@@ -491,12 +532,15 @@ public class Form_Customer extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    
     private javax.swing.JPanel jPanelAddCustomer;
     private javax.swing.JTextField jCustomerPhoneTextField;
     private javax.swing.JTextField jCustomerNameTextField;
     private javax.swing.JComboBox jCustomerGenderTextField;
     private javax.swing.JTextField jCustomerDateTextField;
     private javax.swing.JComboBox jCustomerTypeTextField;
+    private javax.swing.JTextField jCustomerCCTextField;
 
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable customerTable;
