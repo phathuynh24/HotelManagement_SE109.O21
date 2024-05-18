@@ -2,13 +2,14 @@ package com.myproject.dashboard;
 
 import com.myproject.events.EventMenuSelected;
 import com.myproject.forms.Form_1;
-import com.myproject.forms.Form_2;
+import com.myproject.forms.Form_Service;
 import com.myproject.forms.Form_Goods;
 import com.myproject.forms.Form_Room;
 import com.myproject.forms.Form_RoomType;
 import com.myproject.forms.Form_Customer;
 import com.myproject.forms.Form_Account;
 import com.myproject.forms.Form_Home;
+import com.myproject.forms.Form_Staff;
 import java.awt.Color;
 import javax.swing.JComponent;
 
@@ -16,12 +17,13 @@ public class Dashboard extends javax.swing.JFrame {
 
     private Form_Home home;
     private Form_1 form1;
-    private Form_2 form2;
-    private Form_Goods form3;
-    private Form_Room form4;
-    private Form_RoomType form5;
+    private Form_Service formService;
+    private Form_Goods formGoods;
+    private Form_Room formRoom;
+    private Form_RoomType formRoomType;
     private Form_Customer formCustomer;
     private Form_Account formAccount;
+    private Form_Staff formStaff;
 
 
     public Dashboard() {
@@ -29,10 +31,11 @@ public class Dashboard extends javax.swing.JFrame {
         setBackground(new Color(0, 0, 0, 0));
         home = new Form_Home();
         form1 = new Form_1();
-        form2 = new Form_2();
-        form3 = new Form_Goods();
-        form4 = new Form_Room();
-        form5 = new Form_RoomType();
+        formService = new Form_Service();
+        formGoods = new Form_Goods();
+        formRoom = new Form_Room();
+        formRoomType = new Form_RoomType();
+        formStaff=new Form_Staff();
         formCustomer = new Form_Customer();
         formAccount = new Form_Account();
 
@@ -43,12 +46,15 @@ public class Dashboard extends javax.swing.JFrame {
                 switch (index) {
                     case 2 -> setForm(home);
                     case 3 -> setForm(form1);
-                    case 4 -> setForm(form2);
-                    case 5 -> setForm(form3);
-                    case 9 -> setForm(form4);
-                    case 10 -> setForm(form5);
-                    case 11 -> setForm(formCustomer);
-                    case 12 -> setForm(formAccount);
+                    case 4 -> setForm(form1);
+                    case 5 -> setForm(formGoods);
+                    case 6 -> setForm (formService);
+                    case 10 -> setForm(formRoom);
+                    case 11 -> setForm(formRoomType);
+                    case 12 -> setForm(formCustomer);
+                    case 13 -> setForm(formStaff);
+                    case 14 -> setForm(formAccount);
+                    case 15 -> setForm(form1);
                     
                     default -> {
                     }
