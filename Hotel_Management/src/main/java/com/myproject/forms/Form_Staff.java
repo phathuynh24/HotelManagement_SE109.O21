@@ -17,12 +17,12 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import org.bson.Document;
 
-public class Form_RoomType extends javax.swing.JPanel {
+public class Form_Staff extends javax.swing.JPanel {
 
-    public Form_RoomType() {
+    public Form_Staff() {
         initComponents();
         init();
-        loadTypeRoomDataFromMongoDB();
+        loadStaffDataFromMongoDB();
     }
 
     @SuppressWarnings("unchecked")
@@ -54,31 +54,31 @@ public class Form_RoomType extends javax.swing.JPanel {
     public void init() {
         searchField = new SearchText();
         addButton = new javax.swing.JButton();
-        editButton = new javax.swing.JButton();
         deleteButton = new javax.swing.JButton();
+        editButton = new javax.swing.JButton(); // New Edit Button
         jScrollPane1 = new javax.swing.JScrollPane();
-        typeRoomTable = new GoodsTable();
+        staffTable = new GoodsTable();
 
-        addButton.setText("Thêm loại phòng");
+        addButton.setText("Thêm nhân viên");
         addButton.setBackground(new java.awt.Color(28, 181, 224));
         addButton.setForeground(new java.awt.Color(255, 255, 255));
 
-        editButton.setText("Sửa loại phòng");
+        deleteButton.setText("Xóa nhân viên");
+        deleteButton.setBackground(new java.awt.Color(28, 181, 224));
+        deleteButton.setForeground(new java.awt.Color(255, 255, 255));
+        
+        editButton.setText("Sửa nhân viên");
         editButton.setBackground(new java.awt.Color(28, 181, 224));
         editButton.setForeground(new java.awt.Color(255, 255, 255));
 
-        deleteButton.setText("Xóa loại phòng");
-        deleteButton.setBackground(new java.awt.Color(28, 181, 224));
-        deleteButton.setForeground(new java.awt.Color(255, 255, 255));
-
-        typeRoomTable.setModel(new javax.swing.table.DefaultTableModel(
+        staffTable.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][]{},
                 new String[]{
-                    "Mã loại phòng", "Tên loại phòng", "Đơn giá", "Mô tả"
+                    "Mã nhân viên", "Tên", "CCCD", "Số điện thoại", "Bộ phận", "Chức vụ", "Ngày sinh", "Giới tính"
                 }
         ) {
             boolean[] canEdit = new boolean[]{
-                false, false, false, false
+                false, false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -86,7 +86,7 @@ public class Form_RoomType extends javax.swing.JPanel {
             }
         });
 
-        jScrollPane1.setViewportView(typeRoomTable);
+        jScrollPane1.setViewportView(staffTable);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -123,42 +123,41 @@ public class Form_RoomType extends javax.swing.JPanel {
         addButton.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
-                showAddTypeRoomFrame();
+                showAddStaffFrame();
             }
         });
 
-        editButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                showEditTypeRoomFrame();
-            }
-        });
+        deleteButton.addActionListener(e -> deleteSelectedStaff());
 
-        deleteButton.addActionListener(e -> deleteSelectedTypeRoom());
+        editButton.addActionListener(e -> showEditStaffFrame());
 
         searchField.addKeyListener(new java.awt.event.KeyAdapter() {
             @Override
             public void keyReleased(java.awt.event.KeyEvent evt) {
-                searchTypeRoom(searchField.getText());
+                searchStaff(searchField.getText());
             }
         });
     }
 
-    private void searchTypeRoom(String searchText) {
-        DefaultTableModel model = (DefaultTableModel) typeRoomTable.getModel();
+    private void searchStaff(String searchText) {
+        DefaultTableModel model = (DefaultTableModel) staffTable.getModel();
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
-        typeRoomTable.setRowSorter(sorter);
-        sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchText, 0, 1));
+        staffTable.setRowSorter(sorter);
+        sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchText, 0, 1, 2, 3, 4, 5, 6, 7)); // Search across all columns
     }
 
-    private void showAddTypeRoomFrame() {
-        JFrame addTypeRoomFrame = new JFrame("Thêm loại phòng");
+    private void showAddStaffFrame() {
+        JFrame addStaffFrame = new JFrame("Thêm nhân viên mới");
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
         codeField = new javax.swing.JTextField(20);
         nameField = new javax.swing.JTextField(20);
-        descriptionField = new javax.swing.JTextField(20);
-        priceField = new javax.swing.JTextField(20);
+        cccdField = new javax.swing.JTextField(20);
+        phoneField = new javax.swing.JTextField(20);
+        departmentField = new javax.swing.JTextField(20);
+        positionField = new javax.swing.JTextField(20);
+        dobField = new javax.swing.JTextField(20);
+        genderField = new javax.swing.JTextField(20);
 
         codeField.setEditable(false);
         codeField.setEnabled(false);
@@ -171,73 +170,109 @@ public class Form_RoomType extends javax.swing.JPanel {
         buttonPanel.add(cancelButton);
 
         saveButton.addActionListener(e -> {
-            saveTypeRoom();
-            addTypeRoomFrame.dispose();
+            saveStaff();
+            addStaffFrame.dispose();
         });
 
-        cancelButton.addActionListener(e -> addTypeRoomFrame.dispose());
+        cancelButton.addActionListener(e -> addStaffFrame.dispose());
 
-        addTypeRoomFrame.setLayout(new java.awt.GridBagLayout());
+        addStaffFrame.setLayout(new java.awt.GridBagLayout());
         java.awt.GridBagConstraints gbc = new java.awt.GridBagConstraints();
         gbc.insets = new java.awt.Insets(5, 5, 5, 5);
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        addTypeRoomFrame.add(new JLabel("Mã loại phòng:"), gbc);
+        addStaffFrame.add(new JLabel("Mã nhân viên:"), gbc);
 
         gbc.gridx = 1;
-        addTypeRoomFrame.add(codeField, gbc);
+        addStaffFrame.add(codeField, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 1;
-        addTypeRoomFrame.add(new JLabel("Tên loại phòng:"), gbc);
+        addStaffFrame.add(new JLabel("Tên:"), gbc);
 
         gbc.gridx = 1;
-        addTypeRoomFrame.add(nameField, gbc);
+        addStaffFrame.add(nameField, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 2;
-        addTypeRoomFrame.add(new JLabel("Đơn giá:"), gbc);
+        addStaffFrame.add(new JLabel("CCCD:"), gbc);
 
         gbc.gridx = 1;
-        addTypeRoomFrame.add(priceField, gbc);
+        addStaffFrame.add(cccdField, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 3;
-        addTypeRoomFrame.add(new JLabel("Mô tả:"), gbc);
+        addStaffFrame.add(new JLabel("Số điện thoại:"), gbc);
 
         gbc.gridx = 1;
-        addTypeRoomFrame.add(descriptionField, gbc);
+        addStaffFrame.add(phoneField, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 4;
+        addStaffFrame.add(new JLabel("Bộ phận:"), gbc);
+
+        gbc.gridx = 1;
+        addStaffFrame.add(departmentField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        addStaffFrame.add(new JLabel("Chức vụ:"), gbc);
+
+        gbc.gridx = 1;
+        addStaffFrame.add(positionField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 6;
+        addStaffFrame.add(new JLabel("Ngày sinh:"), gbc);
+
+        gbc.gridx = 1;
+        addStaffFrame.add(dobField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 7;
+        addStaffFrame.add(new JLabel("Giới tính:"), gbc);
+
+        gbc.gridx = 1;
+        addStaffFrame.add(genderField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 8;
         gbc.gridwidth = 2;
         gbc.anchor = java.awt.GridBagConstraints.CENTER;
-        addTypeRoomFrame.add(buttonPanel, gbc);
+        addStaffFrame.add(buttonPanel, gbc);
 
-        addTypeRoomFrame.pack();
-        addTypeRoomFrame.setLocationRelativeTo(this);
-        addTypeRoomFrame.setVisible(true);
+        addStaffFrame.pack();
+        addStaffFrame.setLocationRelativeTo(this);
+        addStaffFrame.setVisible(true);
     }
 
-    private void showEditTypeRoomFrame() {
-        int selectedRow = typeRoomTable.getSelectedRow();
+    private void showEditStaffFrame() {
+        int selectedRow = staffTable.getSelectedRow();
         if (selectedRow != -1) {
-            JFrame editTypeRoomFrame = new JFrame("Sửa loại phòng");
+            JFrame editStaffFrame = new JFrame("Sửa nhân viên");
             JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
             codeField = new javax.swing.JTextField(20);
             nameField = new javax.swing.JTextField(20);
-            descriptionField = new javax.swing.JTextField(20);
-            priceField = new javax.swing.JTextField(20);
+            cccdField = new javax.swing.JTextField(20);
+            phoneField = new javax.swing.JTextField(20);
+            departmentField = new javax.swing.JTextField(20);
+            positionField = new javax.swing.JTextField(20);
+            dobField = new javax.swing.JTextField(20);
+            genderField = new javax.swing.JTextField(20);
 
             codeField.setEditable(false);
             codeField.setEnabled(false);
-            codeField.setText((String) typeRoomTable.getValueAt(selectedRow, 0));
+            codeField.setText((String) staffTable.getValueAt(selectedRow, 0));
 
-            nameField.setText((String) typeRoomTable.getValueAt(selectedRow, 1));
-            priceField.setText(String.valueOf(typeRoomTable.getValueAt(selectedRow, 2)));
-            descriptionField.setText((String) typeRoomTable.getValueAt(selectedRow, 3));
+            nameField.setText((String) staffTable.getValueAt(selectedRow, 1));
+            cccdField.setText((String) staffTable.getValueAt(selectedRow, 2));
+            phoneField.setText((String) staffTable.getValueAt(selectedRow, 3));
+            departmentField.setText((String) staffTable.getValueAt(selectedRow, 4));
+            positionField.setText((String) staffTable.getValueAt(selectedRow, 5));
+            dobField.setText((String) staffTable.getValueAt(selectedRow, 6));
+            genderField.setText((String) staffTable.getValueAt(selectedRow, 7));
 
             javax.swing.JButton saveButton = new javax.swing.JButton("Lưu");
             javax.swing.JButton cancelButton = new javax.swing.JButton("Hủy");
@@ -246,90 +281,130 @@ public class Form_RoomType extends javax.swing.JPanel {
             buttonPanel.add(cancelButton);
 
             saveButton.addActionListener(e -> {
-                updateTypeRoom(selectedRow);
-                editTypeRoomFrame.dispose();
+                updateStaff(selectedRow);
+                editStaffFrame.dispose();
             });
 
-            cancelButton.addActionListener(e -> editTypeRoomFrame.dispose());
+            cancelButton.addActionListener(e -> editStaffFrame.dispose());
 
-            editTypeRoomFrame.setLayout(new java.awt.GridBagLayout());
+            editStaffFrame.setLayout(new java.awt.GridBagLayout());
             java.awt.GridBagConstraints gbc = new java.awt.GridBagConstraints();
             gbc.insets = new java.awt.Insets(5, 5, 5, 5);
 
             gbc.gridx = 0;
             gbc.gridy = 0;
-            editTypeRoomFrame.add(new JLabel("Mã loại phòng:"), gbc);
+            editStaffFrame.add(new JLabel("Mã nhân viên:"), gbc);
 
             gbc.gridx = 1;
-            editTypeRoomFrame.add(codeField, gbc);
+            editStaffFrame.add(codeField, gbc);
 
             gbc.gridx = 0;
             gbc.gridy = 1;
-            editTypeRoomFrame.add(new JLabel("Tên loại phòng:"), gbc);
+            editStaffFrame.add(new JLabel("Tên:"), gbc);
 
             gbc.gridx = 1;
-            editTypeRoomFrame.add(nameField, gbc);
+            editStaffFrame.add(nameField, gbc);
 
             gbc.gridx = 0;
             gbc.gridy = 2;
-            editTypeRoomFrame.add(new JLabel("Đơn giá:"), gbc);
+            editStaffFrame.add(new JLabel("CCCD:"), gbc);
 
             gbc.gridx = 1;
-            editTypeRoomFrame.add(priceField, gbc);
+            editStaffFrame.add(cccdField, gbc);
 
             gbc.gridx = 0;
             gbc.gridy = 3;
-            editTypeRoomFrame.add(new JLabel("Mô tả:"), gbc);
+            editStaffFrame.add(new JLabel("Số điện thoại:"), gbc);
 
             gbc.gridx = 1;
-            editTypeRoomFrame.add(descriptionField, gbc);
+            editStaffFrame.add(phoneField, gbc);
 
             gbc.gridx = 0;
             gbc.gridy = 4;
+            editStaffFrame.add(new JLabel("Bộ phận:"), gbc);
+
+            gbc.gridx = 1;
+            editStaffFrame.add(departmentField, gbc);
+
+            gbc.gridx = 0;
+            gbc.gridy = 5;
+            editStaffFrame.add(new JLabel("Chức vụ:"), gbc);
+
+            gbc.gridx = 1;
+            editStaffFrame.add(positionField, gbc);
+
+            gbc.gridx = 0;
+            gbc.gridy = 6;
+            editStaffFrame.add(new JLabel("Ngày sinh:"), gbc);
+
+            gbc.gridx = 1;
+            editStaffFrame.add(dobField, gbc);
+
+            gbc.gridx = 0;
+            gbc.gridy = 7;
+            editStaffFrame.add(new JLabel("Giới tính:"), gbc);
+
+            gbc.gridx = 1;
+            editStaffFrame.add(genderField, gbc);
+
+            gbc.gridx = 0;
+            gbc.gridy = 8;
             gbc.gridwidth = 2;
             gbc.anchor = java.awt.GridBagConstraints.CENTER;
-            editTypeRoomFrame.add(buttonPanel, gbc);
+            editStaffFrame.add(buttonPanel, gbc);
 
-            editTypeRoomFrame.pack();
-            editTypeRoomFrame.setLocationRelativeTo(this);
-            editTypeRoomFrame.setVisible(true);
+            editStaffFrame.pack();
+            editStaffFrame.setLocationRelativeTo(this);
+            editStaffFrame.setVisible(true);
         } else {
             JOptionPane.showMessageDialog(null, "Vui lòng chọn một hàng để sửa.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
-    private void saveTypeRoom() {
+    private void saveStaff() {
         String code = codeField.getText();
-        String name = nameField.getText(); 
-        double price = Double.parseDouble(priceField.getText());
-        String description = descriptionField.getText();
+        String name = nameField.getText();
+        String cccd = cccdField.getText();
+        String phone = phoneField.getText();
+        String department = departmentField.getText();
+        String position = positionField.getText();
+        String dob = dobField.getText();
+        String gender = genderField.getText();
 
-        addTypeRoomToMongoDB(code, name, price, description);
-        loadTypeRoomDataFromMongoDB();
+        addStaffToMongoDB(code, name, cccd, phone, department, position, dob, gender);
+        loadStaffDataFromMongoDB();
     }
 
-    private void updateTypeRoom(int selectedRow) {
+    private void updateStaff(int selectedRow) {
         String code = codeField.getText();
-        String name = nameField.getText(); 
-        double price = Double.parseDouble(priceField.getText());
-        String description = descriptionField.getText();
+        String name = nameField.getText();
+        String cccd = cccdField.getText();
+        String phone = phoneField.getText();
+        String department = departmentField.getText();
+        String position = positionField.getText();
+        String dob = dobField.getText();
+        String gender = genderField.getText();
 
-        updateTypeRoomInMongoDB(code, name, price, description);
-        loadTypeRoomDataFromMongoDB();
+        updateStaffInMongoDB(code, name, cccd, phone, department, position, dob, gender);
+        loadStaffDataFromMongoDB();
     }
 
-    private void addTypeRoomToMongoDB(String code, String name, double price, String description) {
+    private void addStaffToMongoDB(String code, String name, String cccd, String phone, String department, String position, String dob, String gender) {
         String uri = "mongodb+srv://HotelGroup:xfwl2Y6oahXJugda@cluster0.awr6sf9.mongodb.net/";
 
         try (MongoClient mongoClient = MongoClients.create(uri)) {
             MongoDatabase database = mongoClient.getDatabase("Hotel_Management");
-            MongoCollection<Document> collection = database.getCollection("RoomType");
+            MongoCollection<Document> collection = database.getCollection("Staff");
 
             Document document = new Document();
             document.put("code", code);
             document.put("name", name);
-            document.put("price", price);
-            document.put("description", description);
+            document.put("cccd", cccd);
+            document.put("phone", phone);
+            document.put("department", department);
+            document.put("position", position);
+            document.put("dob", dob);
+            document.put("gender", gender);
 
             collection.insertOne(document);
         } catch (Exception e) {
@@ -337,69 +412,80 @@ public class Form_RoomType extends javax.swing.JPanel {
         }
     }
 
-    private void updateTypeRoomInMongoDB(String code, String name, double price, String description) {
+    private void updateStaffInMongoDB(String code, String name, String cccd, String phone, String department, String position, String dob, String gender) {
         String uri = "mongodb+srv://HotelGroup:xfwl2Y6oahXJugda@cluster0.awr6sf9.mongodb.net/";
 
         try (MongoClient mongoClient = MongoClients.create(uri)) {
             MongoDatabase database = mongoClient.getDatabase("Hotel_Management");
-            MongoCollection<Document> collection = database.getCollection("RoomType");
+            MongoCollection<Document> collection = database.getCollection("Staff");
 
             Document updatedDocument = new Document();
             updatedDocument.put("name", name);
-            updatedDocument.put("price", price);
-            updatedDocument.put("description", description);
+            updatedDocument.put("cccd", cccd);
+            updatedDocument.put("phone", phone);
+            updatedDocument.put("department", department);
+            updatedDocument.put("position", position);
+            updatedDocument.put("dob", dob);
+            updatedDocument.put("gender", gender);
 
-            collection.updateOne(new Document("code", code), new Document("$set", updatedDocument));
+            Document updateQuery = new Document("$set", updatedDocument);
+
+            collection.updateOne(new Document("code", code), updateQuery);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void deleteSelectedTypeRoom() {
-        int selectedRow = typeRoomTable.getSelectedRow();
+    private void deleteSelectedStaff() {
+        int selectedRow = staffTable.getSelectedRow();
         if (selectedRow != -1) {
-            int confirm = JOptionPane.showConfirmDialog(null, "Bạn có chắc muốn xóa dịch vụ này?", "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
+            int confirm = JOptionPane.showConfirmDialog(null, "Bạn có chắc muốn xóa nhân viên này?", "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                deleteTypeRoomFromDB(selectedRow);
+                deleteStaffFromDB(selectedRow);
             }
         } else {
             JOptionPane.showMessageDialog(null, "Vui lòng chọn một hàng để xóa.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
-    private void deleteTypeRoomFromDB(int selectedRow) {
+    private void deleteStaffFromDB(int selectedRow) {
         String uri = "mongodb+srv://HotelGroup:xfwl2Y6oahXJugda@cluster0.awr6sf9.mongodb.net/";
 
         try (MongoClient mongoClient = MongoClients.create(uri)) {
             MongoDatabase database = mongoClient.getDatabase("Hotel_Management");
-            MongoCollection<Document> collection = database.getCollection("RoomType");
-            String code = (String) typeRoomTable.getValueAt(selectedRow, 0);
+            MongoCollection<Document> collection = database.getCollection("Staff");
+
+            String code = (String) staffTable.getValueAt(selectedRow, 0);
             collection.deleteOne(new Document("code", code));
 
-            DefaultTableModel model = (DefaultTableModel) typeRoomTable.getModel();
+            DefaultTableModel model = (DefaultTableModel) staffTable.getModel();
             model.removeRow(selectedRow);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void loadTypeRoomDataFromMongoDB() {
+    private void loadStaffDataFromMongoDB() {
         String uri = "mongodb+srv://HotelGroup:xfwl2Y6oahXJugda@cluster0.awr6sf9.mongodb.net/";
 
         try (MongoClient mongoClient = MongoClients.create(uri)) {
             MongoDatabase database = mongoClient.getDatabase("Hotel_Management");
-            MongoCollection<Document> collection = database.getCollection("RoomType");
+            MongoCollection<Document> collection = database.getCollection("Staff");
 
-            model = (DefaultTableModel) typeRoomTable.getModel();
+            model = (DefaultTableModel) staffTable.getModel();
             model.setRowCount(0);
 
             for (Document doc : collection.find()) {
                 String code = doc.getString("code");
                 String name = doc.getString("name");
-                double price = doc.getDouble("price");
-                String description = doc.getString("description");
+                String cccd = doc.getString("cccd");
+                String phone = doc.getString("phone");
+                String department = doc.getString("department");
+                String position = doc.getString("position");
+                String dob = doc.getString("dob");
+                String gender = doc.getString("gender");
 
-                model.addRow(new Object[]{code, name, price, description});
+                model.addRow(new Object[]{code, name, cccd, phone, department, position, dob, gender});
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -409,19 +495,23 @@ public class Form_RoomType extends javax.swing.JPanel {
     private String generateRandomCode() {
         Random rand = new Random();
         int randomNum = rand.nextInt(900) + 100;
-        return "RT" + randomNum;
+        return "NV" + randomNum;
     }
 
     private javax.swing.JLabel jLabel1;
     private javax.swing.JButton addButton;
-    private javax.swing.JButton editButton;
     private javax.swing.JButton deleteButton;
+    private javax.swing.JButton editButton;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField searchField;
-    private GoodsTable typeRoomTable;
+    private GoodsTable staffTable;
     private javax.swing.JTextField nameField;
-    private javax.swing.JTextField descriptionField;
-    private javax.swing.JTextField priceField;
+    private javax.swing.JTextField cccdField;
+    private javax.swing.JTextField phoneField;
+    private javax.swing.JTextField departmentField;
+    private javax.swing.JTextField positionField;
+    private javax.swing.JTextField dobField;
+    private javax.swing.JTextField genderField;
     private javax.swing.JTextField codeField;
     private DefaultTableModel model;
 }

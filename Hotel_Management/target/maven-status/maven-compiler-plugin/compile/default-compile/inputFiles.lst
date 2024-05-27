@@ -1,3 +1,4 @@
+D:\PT_BT\HotelManagement_SE109.O21\Hotel_Management\src\main\java\com\myproject\forms\ButtonRenderer.java
 D:\PT_BT\HotelManagement_SE109.O21\Hotel_Management\src\main\java\com\myproject\models\types\Role.java
 D:\PT_BT\HotelManagement_SE109.O21\Hotel_Management\src\main\java\com\myproject\models\Model_Menu.java
 D:\PT_BT\HotelManagement_SE109.O21\Hotel_Management\src\main\java\com\myproject\dashboard\Dashboard.java
@@ -21,6 +22,8 @@ D:\PT_BT\HotelManagement_SE109.O21\Hotel_Management\src\main\java\com\myproject\
 D:\PT_BT\HotelManagement_SE109.O21\Hotel_Management\src\main\java\com\myproject\swings\CellStatus.java
 D:\PT_BT\HotelManagement_SE109.O21\Hotel_Management\src\main\java\com\myproject\models\Model_Room.java
 D:\PT_BT\HotelManagement_SE109.O21\Hotel_Management\src\main\java\com\myproject\events\EventMenuSelected.java
+D:\PT_BT\HotelManagement_SE109.O21\Hotel_Management\src\main\java\com\myproject\forms\Form_Staff.java
+D:\PT_BT\HotelManagement_SE109.O21\Hotel_Management\src\main\java\com\myproject\forms\Form_Service.java
 D:\PT_BT\HotelManagement_SE109.O21\Hotel_Management\src\main\java\com\myproject\swings\PanelBorder.java
 D:\PT_BT\HotelManagement_SE109.O21\Hotel_Management\src\main\java\com\myproject\forms\Form_RoomType.java
 D:\PT_BT\HotelManagement_SE109.O21\Hotel_Management\src\main\java\com\myproject\models\types\RoomType.java
@@ -32,7 +35,6 @@ D:\PT_BT\HotelManagement_SE109.O21\Hotel_Management\src\main\java\com\myproject\
 D:\PT_BT\HotelManagement_SE109.O21\Hotel_Management\src\main\java\com\myproject\hotel_management\Hotel_Management.java
 D:\PT_BT\HotelManagement_SE109.O21\Hotel_Management\src\main\java\com\myproject\swings\ScrollBar.java
 D:\PT_BT\HotelManagement_SE109.O21\Hotel_Management\src\main\java\com\myproject\forms\Form_Home.java
-D:\PT_BT\HotelManagement_SE109.O21\Hotel_Management\src\main\java\com\myproject\forms\Form_2.java
 D:\PT_BT\HotelManagement_SE109.O21\Hotel_Management\src\main\java\com\myproject\forms\Form_Customer.java
 D:\PT_BT\HotelManagement_SE109.O21\Hotel_Management\src\main\java\com\myproject\models\types\RoomStatus.java
 D:\PT_BT\HotelManagement_SE109.O21\Hotel_Management\src\main\java\com\myproject\models\Model_Employee.java

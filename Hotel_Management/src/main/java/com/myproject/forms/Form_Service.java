@@ -17,12 +17,12 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import org.bson.Document;
 
-public class Form_RoomType extends javax.swing.JPanel {
+public class Form_Service extends javax.swing.JPanel {
 
-    public Form_RoomType() {
+    public Form_Service() {
         initComponents();
         init();
-        loadTypeRoomDataFromMongoDB();
+        loadServiceDataFromMongoDB();
     }
 
     @SuppressWarnings("unchecked")
@@ -54,27 +54,27 @@ public class Form_RoomType extends javax.swing.JPanel {
     public void init() {
         searchField = new SearchText();
         addButton = new javax.swing.JButton();
-        editButton = new javax.swing.JButton();
         deleteButton = new javax.swing.JButton();
+        editButton = new javax.swing.JButton(); // New Edit Button
         jScrollPane1 = new javax.swing.JScrollPane();
-        typeRoomTable = new GoodsTable();
+        serviceTable = new GoodsTable();
 
-        addButton.setText("Thêm loại phòng");
+        addButton.setText("Thêm dịch vụ");
         addButton.setBackground(new java.awt.Color(28, 181, 224));
         addButton.setForeground(new java.awt.Color(255, 255, 255));
 
-        editButton.setText("Sửa loại phòng");
+        deleteButton.setText("Xóa dịch vụ");
+        deleteButton.setBackground(new java.awt.Color(28, 181, 224));
+        deleteButton.setForeground(new java.awt.Color(255, 255, 255));
+        
+        editButton.setText("Sửa dịch vụ");
         editButton.setBackground(new java.awt.Color(28, 181, 224));
         editButton.setForeground(new java.awt.Color(255, 255, 255));
 
-        deleteButton.setText("Xóa loại phòng");
-        deleteButton.setBackground(new java.awt.Color(28, 181, 224));
-        deleteButton.setForeground(new java.awt.Color(255, 255, 255));
-
-        typeRoomTable.setModel(new javax.swing.table.DefaultTableModel(
+        serviceTable.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][]{},
                 new String[]{
-                    "Mã loại phòng", "Tên loại phòng", "Đơn giá", "Mô tả"
+                    "Mã dịch vụ", "Tên dịch vụ", "Đơn vị tính", "Đơn giá"
                 }
         ) {
             boolean[] canEdit = new boolean[]{
@@ -86,7 +86,7 @@ public class Form_RoomType extends javax.swing.JPanel {
             }
         });
 
-        jScrollPane1.setViewportView(typeRoomTable);
+        jScrollPane1.setViewportView(serviceTable);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -123,41 +123,36 @@ public class Form_RoomType extends javax.swing.JPanel {
         addButton.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent e) {
-                showAddTypeRoomFrame();
+                showAddServiceFrame();
             }
         });
 
-        editButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                showEditTypeRoomFrame();
-            }
-        });
+        deleteButton.addActionListener(e -> deleteSelectedService());
 
-        deleteButton.addActionListener(e -> deleteSelectedTypeRoom());
+        editButton.addActionListener(e -> showEditServiceFrame());
 
         searchField.addKeyListener(new java.awt.event.KeyAdapter() {
             @Override
             public void keyReleased(java.awt.event.KeyEvent evt) {
-                searchTypeRoom(searchField.getText());
+                searchService(searchField.getText());
             }
         });
     }
 
-    private void searchTypeRoom(String searchText) {
-        DefaultTableModel model = (DefaultTableModel) typeRoomTable.getModel();
+    private void searchService(String searchText) {
+        DefaultTableModel model = (DefaultTableModel) serviceTable.getModel();
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
-        typeRoomTable.setRowSorter(sorter);
-        sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchText, 0, 1));
+        serviceTable.setRowSorter(sorter);
+        sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchText, 0, 1)); // Tìm kiếm theo mã dịch vụ (cột 0) và tên dịch vụ (cột 1)
     }
 
-    private void showAddTypeRoomFrame() {
-        JFrame addTypeRoomFrame = new JFrame("Thêm loại phòng");
+    private void showAddServiceFrame() {
+        JFrame addServiceFrame = new JFrame("Thêm dịch vụ mới");
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
         codeField = new javax.swing.JTextField(20);
         nameField = new javax.swing.JTextField(20);
-        descriptionField = new javax.swing.JTextField(20);
+        unitField = new javax.swing.JTextField(20);
         priceField = new javax.swing.JTextField(20);
 
         codeField.setEditable(false);
@@ -171,73 +166,73 @@ public class Form_RoomType extends javax.swing.JPanel {
         buttonPanel.add(cancelButton);
 
         saveButton.addActionListener(e -> {
-            saveTypeRoom();
-            addTypeRoomFrame.dispose();
+            saveService();
+            addServiceFrame.dispose();
         });
 
-        cancelButton.addActionListener(e -> addTypeRoomFrame.dispose());
+        cancelButton.addActionListener(e -> addServiceFrame.dispose());
 
-        addTypeRoomFrame.setLayout(new java.awt.GridBagLayout());
+        addServiceFrame.setLayout(new java.awt.GridBagLayout());
         java.awt.GridBagConstraints gbc = new java.awt.GridBagConstraints();
         gbc.insets = new java.awt.Insets(5, 5, 5, 5);
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        addTypeRoomFrame.add(new JLabel("Mã loại phòng:"), gbc);
+        addServiceFrame.add(new JLabel("Mã dịch vụ:"), gbc);
 
         gbc.gridx = 1;
-        addTypeRoomFrame.add(codeField, gbc);
+        addServiceFrame.add(codeField, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 1;
-        addTypeRoomFrame.add(new JLabel("Tên loại phòng:"), gbc);
+        addServiceFrame.add(new JLabel("Tên dịch vụ:"), gbc);
 
         gbc.gridx = 1;
-        addTypeRoomFrame.add(nameField, gbc);
+        addServiceFrame.add(nameField, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 2;
-        addTypeRoomFrame.add(new JLabel("Đơn giá:"), gbc);
+        addServiceFrame.add(new JLabel("Đơn vị tính:"), gbc);
 
         gbc.gridx = 1;
-        addTypeRoomFrame.add(priceField, gbc);
+        addServiceFrame.add(unitField, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 3;
-        addTypeRoomFrame.add(new JLabel("Mô tả:"), gbc);
+        addServiceFrame.add(new JLabel("Đơn giá:"), gbc);
 
         gbc.gridx = 1;
-        addTypeRoomFrame.add(descriptionField, gbc);
+        addServiceFrame.add(priceField, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 4;
         gbc.gridwidth = 2;
         gbc.anchor = java.awt.GridBagConstraints.CENTER;
-        addTypeRoomFrame.add(buttonPanel, gbc);
+        addServiceFrame.add(buttonPanel, gbc);
 
-        addTypeRoomFrame.pack();
-        addTypeRoomFrame.setLocationRelativeTo(this);
-        addTypeRoomFrame.setVisible(true);
+        addServiceFrame.pack();
+        addServiceFrame.setLocationRelativeTo(this);
+        addServiceFrame.setVisible(true);
     }
 
-    private void showEditTypeRoomFrame() {
-        int selectedRow = typeRoomTable.getSelectedRow();
+    private void showEditServiceFrame() {
+        int selectedRow = serviceTable.getSelectedRow();
         if (selectedRow != -1) {
-            JFrame editTypeRoomFrame = new JFrame("Sửa loại phòng");
+            JFrame editServiceFrame = new JFrame("Sửa dịch vụ");
             JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
             codeField = new javax.swing.JTextField(20);
             nameField = new javax.swing.JTextField(20);
-            descriptionField = new javax.swing.JTextField(20);
+            unitField = new javax.swing.JTextField(20);
             priceField = new javax.swing.JTextField(20);
 
             codeField.setEditable(false);
             codeField.setEnabled(false);
-            codeField.setText((String) typeRoomTable.getValueAt(selectedRow, 0));
+            codeField.setText((String) serviceTable.getValueAt(selectedRow, 0));
 
-            nameField.setText((String) typeRoomTable.getValueAt(selectedRow, 1));
-            priceField.setText(String.valueOf(typeRoomTable.getValueAt(selectedRow, 2)));
-            descriptionField.setText((String) typeRoomTable.getValueAt(selectedRow, 3));
+            nameField.setText((String) serviceTable.getValueAt(selectedRow, 1));
+            unitField.setText((String) serviceTable.getValueAt(selectedRow, 2));
+            priceField.setText(serviceTable.getValueAt(selectedRow, 3).toString());
 
             javax.swing.JButton saveButton = new javax.swing.JButton("Lưu");
             javax.swing.JButton cancelButton = new javax.swing.JButton("Hủy");
@@ -246,90 +241,90 @@ public class Form_RoomType extends javax.swing.JPanel {
             buttonPanel.add(cancelButton);
 
             saveButton.addActionListener(e -> {
-                updateTypeRoom(selectedRow);
-                editTypeRoomFrame.dispose();
+                updateService(selectedRow);
+                editServiceFrame.dispose();
             });
 
-            cancelButton.addActionListener(e -> editTypeRoomFrame.dispose());
+            cancelButton.addActionListener(e -> editServiceFrame.dispose());
 
-            editTypeRoomFrame.setLayout(new java.awt.GridBagLayout());
+            editServiceFrame.setLayout(new java.awt.GridBagLayout());
             java.awt.GridBagConstraints gbc = new java.awt.GridBagConstraints();
             gbc.insets = new java.awt.Insets(5, 5, 5, 5);
 
             gbc.gridx = 0;
             gbc.gridy = 0;
-            editTypeRoomFrame.add(new JLabel("Mã loại phòng:"), gbc);
+            editServiceFrame.add(new JLabel("Mã dịch vụ:"), gbc);
 
             gbc.gridx = 1;
-            editTypeRoomFrame.add(codeField, gbc);
+            editServiceFrame.add(codeField, gbc);
 
             gbc.gridx = 0;
             gbc.gridy = 1;
-            editTypeRoomFrame.add(new JLabel("Tên loại phòng:"), gbc);
+            editServiceFrame.add(new JLabel("Tên dịch vụ:"), gbc);
 
             gbc.gridx = 1;
-            editTypeRoomFrame.add(nameField, gbc);
+            editServiceFrame.add(nameField, gbc);
 
             gbc.gridx = 0;
             gbc.gridy = 2;
-            editTypeRoomFrame.add(new JLabel("Đơn giá:"), gbc);
+            editServiceFrame.add(new JLabel("Đơn vị tính:"), gbc);
 
             gbc.gridx = 1;
-            editTypeRoomFrame.add(priceField, gbc);
+            editServiceFrame.add(unitField, gbc);
 
             gbc.gridx = 0;
             gbc.gridy = 3;
-            editTypeRoomFrame.add(new JLabel("Mô tả:"), gbc);
+            editServiceFrame.add(new JLabel("Đơn giá:"), gbc);
 
             gbc.gridx = 1;
-            editTypeRoomFrame.add(descriptionField, gbc);
+            editServiceFrame.add(priceField, gbc);
 
             gbc.gridx = 0;
             gbc.gridy = 4;
             gbc.gridwidth = 2;
             gbc.anchor = java.awt.GridBagConstraints.CENTER;
-            editTypeRoomFrame.add(buttonPanel, gbc);
+            editServiceFrame.add(buttonPanel, gbc);
 
-            editTypeRoomFrame.pack();
-            editTypeRoomFrame.setLocationRelativeTo(this);
-            editTypeRoomFrame.setVisible(true);
+            editServiceFrame.pack();
+            editServiceFrame.setLocationRelativeTo(this);
+            editServiceFrame.setVisible(true);
         } else {
             JOptionPane.showMessageDialog(null, "Vui lòng chọn một hàng để sửa.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
-    private void saveTypeRoom() {
+    private void saveService() {
         String code = codeField.getText();
-        String name = nameField.getText(); 
+        String name = nameField.getText();
+        String unit = unitField.getText();
         double price = Double.parseDouble(priceField.getText());
-        String description = descriptionField.getText();
 
-        addTypeRoomToMongoDB(code, name, price, description);
-        loadTypeRoomDataFromMongoDB();
+        addServiceToMongoDB(code, name, unit, price);
+        loadServiceDataFromMongoDB();
     }
 
-    private void updateTypeRoom(int selectedRow) {
+    private void updateService(int selectedRow) {
         String code = codeField.getText();
-        String name = nameField.getText(); 
+        String name = nameField.getText();
+        String unit = unitField.getText();
         double price = Double.parseDouble(priceField.getText());
-        String description = descriptionField.getText();
 
-        updateTypeRoomInMongoDB(code, name, price, description);
-        loadTypeRoomDataFromMongoDB();
+        updateServiceInMongoDB(code, name, unit, price);
+        loadServiceDataFromMongoDB();
     }
 
-    private void addTypeRoomToMongoDB(String code, String name, double price, String description) {
+    private void addServiceToMongoDB(String code, String name, String unit, double price) {
         String uri = "mongodb+srv://HotelGroup:xfwl2Y6oahXJugda@cluster0.awr6sf9.mongodb.net/";
 
         try (MongoClient mongoClient = MongoClients.create(uri)) {
             MongoDatabase database = mongoClient.getDatabase("Hotel_Management");
-            MongoCollection<Document> collection = database.getCollection("RoomType");
+            MongoCollection<Document> collection = database.getCollection("Service");
 
             Document document = new Document();
             document.put("code", code);
             document.put("name", name);
+            document.put("unit", unit);
             document.put("price", price);
-            document.put("description", description);
 
             collection.insertOne(document);
         } catch (Exception e) {
@@ -337,69 +332,72 @@ public class Form_RoomType extends javax.swing.JPanel {
         }
     }
 
-    private void updateTypeRoomInMongoDB(String code, String name, double price, String description) {
+    private void updateServiceInMongoDB(String code, String name, String unit, double price) {
         String uri = "mongodb+srv://HotelGroup:xfwl2Y6oahXJugda@cluster0.awr6sf9.mongodb.net/";
 
         try (MongoClient mongoClient = MongoClients.create(uri)) {
             MongoDatabase database = mongoClient.getDatabase("Hotel_Management");
-            MongoCollection<Document> collection = database.getCollection("RoomType");
+            MongoCollection<Document> collection = database.getCollection("Service");
 
             Document updatedDocument = new Document();
             updatedDocument.put("name", name);
+            updatedDocument.put("unit", unit);
             updatedDocument.put("price", price);
-            updatedDocument.put("description", description);
 
-            collection.updateOne(new Document("code", code), new Document("$set", updatedDocument));
+            Document updateQuery = new Document("$set", updatedDocument);
+
+            collection.updateOne(new Document("code", code), updateQuery);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void deleteSelectedTypeRoom() {
-        int selectedRow = typeRoomTable.getSelectedRow();
+    private void deleteSelectedService() {
+        int selectedRow = serviceTable.getSelectedRow();
         if (selectedRow != -1) {
             int confirm = JOptionPane.showConfirmDialog(null, "Bạn có chắc muốn xóa dịch vụ này?", "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                deleteTypeRoomFromDB(selectedRow);
+                deleteServiceFromDB(selectedRow);
             }
         } else {
             JOptionPane.showMessageDialog(null, "Vui lòng chọn một hàng để xóa.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
-    private void deleteTypeRoomFromDB(int selectedRow) {
+    private void deleteServiceFromDB(int selectedRow) {
         String uri = "mongodb+srv://HotelGroup:xfwl2Y6oahXJugda@cluster0.awr6sf9.mongodb.net/";
 
         try (MongoClient mongoClient = MongoClients.create(uri)) {
             MongoDatabase database = mongoClient.getDatabase("Hotel_Management");
-            MongoCollection<Document> collection = database.getCollection("RoomType");
-            String code = (String) typeRoomTable.getValueAt(selectedRow, 0);
+            MongoCollection<Document> collection = database.getCollection("Service");
+
+            String code = (String) serviceTable.getValueAt(selectedRow, 0);
             collection.deleteOne(new Document("code", code));
 
-            DefaultTableModel model = (DefaultTableModel) typeRoomTable.getModel();
+            DefaultTableModel model = (DefaultTableModel) serviceTable.getModel();
             model.removeRow(selectedRow);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void loadTypeRoomDataFromMongoDB() {
+    private void loadServiceDataFromMongoDB() {
         String uri = "mongodb+srv://HotelGroup:xfwl2Y6oahXJugda@cluster0.awr6sf9.mongodb.net/";
 
         try (MongoClient mongoClient = MongoClients.create(uri)) {
             MongoDatabase database = mongoClient.getDatabase("Hotel_Management");
-            MongoCollection<Document> collection = database.getCollection("RoomType");
+            MongoCollection<Document> collection = database.getCollection("Service");
 
-            model = (DefaultTableModel) typeRoomTable.getModel();
+            model = (DefaultTableModel) serviceTable.getModel();
             model.setRowCount(0);
 
             for (Document doc : collection.find()) {
                 String code = doc.getString("code");
                 String name = doc.getString("name");
+                String unit = doc.getString("unit");
                 double price = doc.getDouble("price");
-                String description = doc.getString("description");
 
-                model.addRow(new Object[]{code, name, price, description});
+                model.addRow(new Object[]{code, name, unit, price});
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -409,18 +407,18 @@ public class Form_RoomType extends javax.swing.JPanel {
     private String generateRandomCode() {
         Random rand = new Random();
         int randomNum = rand.nextInt(900) + 100;
-        return "RT" + randomNum;
+        return "DV" + randomNum;
     }
 
     private javax.swing.JLabel jLabel1;
     private javax.swing.JButton addButton;
-    private javax.swing.JButton editButton;
     private javax.swing.JButton deleteButton;
+    private javax.swing.JButton editButton; // New Edit Button
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField searchField;
-    private GoodsTable typeRoomTable;
+    private GoodsTable serviceTable;
     private javax.swing.JTextField nameField;
-    private javax.swing.JTextField descriptionField;
+    private javax.swing.JTextField unitField;
     private javax.swing.JTextField priceField;
     private javax.swing.JTextField codeField;
     private DefaultTableModel model;
