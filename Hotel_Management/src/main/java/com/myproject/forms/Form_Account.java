@@ -9,26 +9,37 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
+import com.myproject.models.Model_Account;
 import com.myproject.swings.ScrollBar;
 import com.myproject.swings.SearchText;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -39,11 +50,13 @@ import org.bson.types.ObjectId;
 
 public class Form_Account extends javax.swing.JPanel {
 
-    private List<User> userList = new ArrayList<>();
+    private List<Model_Account> userList = new ArrayList<>();
     private DefaultTableModel tableModel;
     private AddUserForm addUserForm;
     private EditUserForm editUserForm;
     private JTextField searchField;
+    private DefaultTableModel leftTableModel;
+    private DefaultTableModel rightTableModel;
 
     public Form_Account() {
         initComponents();
@@ -69,7 +82,7 @@ public class Form_Account extends javax.swing.JPanel {
                 String value1 = document.getString("username");
                 String value2 = document.getString("fullName");
                 String value3 = document.getString("password");
-                User user = new User(value0, value1, value2, value3);
+                Model_Account user = new Model_Account(value0, value1, value2, value3);
                 addUserToListAndTable(user);
             }
         } catch (Exception e) {
@@ -77,14 +90,14 @@ public class Form_Account extends javax.swing.JPanel {
         }
     }
 
-    public void addUserToListAndTable(User user) {
+    public void addUserToListAndTable(Model_Account user) {
         // Thêm người dùng vào danh sách
         userList.add(user);
         // Thêm dòng mới vào bảng
         tableModel.addRow(new Object[]{false, user.getUsername(), user.getFullName()});
     }
 
-    public void updateUserToListAndTable(User updatedUser, int rowIndex) {
+    public void updateUserToListAndTable(Model_Account updatedUser, int rowIndex) {
         // Cập nhật thông tin người dùng trong danh sách
         userList.set(rowIndex, updatedUser);
 
@@ -117,6 +130,93 @@ public class Form_Account extends javax.swing.JPanel {
         }
     }
 
+    private void showPermissionForm() {
+        // Tạo một JFrame mới để chứa form phân quyền
+        JFrame permissionFrame = new JFrame("Phân quyền user");
+        permissionFrame.setSize(800, 400);
+
+        // Tạo một bảng cho danh sách tài khoản
+        String[] leftColumnNames = {"Tài khoản", "Họ tên"};
+        leftTableModel = new DefaultTableModel(null, leftColumnNames) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // Chặn sửa các ô trong cột "Tài khoản" và "Họ tên"
+                return false;
+            }
+        };
+        JTable leftTable = new JTable(leftTableModel);
+
+        // Thêm dữ liệu từ userList vào bảng bên trái
+        for (Model_Account user : userList) {
+            leftTableModel.addRow(new Object[]{user.getUsername(), user.getFullName()});
+        }
+
+        // Tạo một bảng cho chức năng và quyền
+        String[] rightColumnNames = {"Chức năng", "Quyền"};
+        rightTableModel = new DefaultTableModel(null, rightColumnNames) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // Chỉ cho phép chỉnh sửa ô trong cột "Quyền" của bảng bên phải
+                return column == 1;
+            }
+        };
+        JTable rightTable = new JTable(rightTableModel);
+
+        // Thêm ComboBox vào cột "Quyền" của bảng bên phải
+        JComboBox<String> comboBox = new JComboBox<>(new String[]{"Toàn quyền", "Chỉ xem", "Khóa quyền"});
+        rightTable.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(comboBox));
+
+        // Thêm dữ liệu vào bảng bên phải
+        String[] permissions = {
+            "Đặt phòng",
+            "Hóa đơn",
+            "Quản lý nhân viên",
+            "Thông tin khách hàng",
+            "Thống kê doanh thu",
+            "Quản lý hàng hóa",
+            "Quản lý dịch vụ",
+            "Quản lý tầng",
+            "Quản lý phòng",
+            "Quản lý loại phòng"};
+        for (String permission : permissions) {
+            rightTableModel.addRow(new Object[]{permission, "Khóa quyền"}); // Mặc định chọn "Khóa quyền"
+        }
+
+        // Thiết lập kích thước ưu tiên cho mỗi bảng
+        leftTable.setPreferredScrollableViewportSize(new Dimension(400, 300));
+        rightTable.setPreferredScrollableViewportSize(new Dimension(400, 300));
+
+        // Tạo một panel chứa bảng bên trái
+        JPanel leftPanel = new JPanel(new BorderLayout());
+        leftPanel.add(new JScrollPane(leftTable), BorderLayout.CENTER);
+        leftPanel.setBorder(BorderFactory.createTitledBorder("Bảng bên trái"));
+
+        // Tạo một panel chứa bảng bên phải
+        JPanel rightPanel = new JPanel(new BorderLayout());
+        rightPanel.add(new JScrollPane(rightTable), BorderLayout.CENTER);
+        rightPanel.setBorder(BorderFactory.createTitledBorder("Bảng bên phải"));
+
+        // Thêm hai panel vào một GridBagLayout
+        GridBagConstraints gbc = new GridBagConstraints();
+        permissionFrame.setLayout(new GridBagLayout());
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.5;
+        gbc.weighty = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        permissionFrame.add(leftPanel, gbc);
+
+        gbc.gridx = 1;
+        permissionFrame.add(rightPanel, gbc);
+
+        // Thiết lập vị trí của JFrame ở giữa màn hình
+        permissionFrame.setLocationRelativeTo(null);
+
+        // Hiển thị form phân quyền
+        permissionFrame.setVisible(true);
+    }
+
     private void displayUser() {
         table.addMouseListener(new MouseAdapter() {
             @Override
@@ -126,7 +226,7 @@ public class Form_Account extends javax.swing.JPanel {
                     if (column != 0) { // Kiểm tra xem cột được click có phải là cột đầu tiên không
                         int selectedRow = table.getSelectedRow();
                         if (selectedRow != -1) {
-                            User selectedUser = userList.get(selectedRow);
+                            Model_Account selectedUser = userList.get(selectedRow);
 
                             // Hiển thị form chỉnh sửa thông tin người dùng
                             if (editUserForm == null || !editUserForm.isVisible()) {
@@ -238,7 +338,6 @@ public class Form_Account extends javax.swing.JPanel {
         });
 
         jButton2.setText("Phân quyền");
-        jButton2.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
@@ -287,7 +386,7 @@ public class Form_Account extends javax.swing.JPanel {
                                         .addComponent(jButton4))
                                 .addContainerGap())
         );
-        
+
         jPanel1.setPreferredSize(new java.awt.Dimension(920, jPanel1.getPreferredSize().height));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -311,9 +410,6 @@ public class Form_Account extends javax.swing.JPanel {
         );
     }
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
-    }
-
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
         if (addUserForm == null || !addUserForm.isVisible()) {
             // Nếu form thêm chưa được mở hoặc đã bị đóng, thì tạo một form mới
@@ -323,6 +419,11 @@ public class Form_Account extends javax.swing.JPanel {
             addUserForm.toFront();
         }
         addUserForm.setVisible(true);
+    }
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
+        // Hiển thị form mới khi click vào nút "Phân quyền user"
+        showPermissionForm();
     }
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {
@@ -349,6 +450,7 @@ public class Form_Account extends javax.swing.JPanel {
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
     }
+
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
@@ -452,12 +554,28 @@ class AddUserForm extends JFrame {
                 Document document = new Document("username", username)
                         .append("fullName", fullName)
                         .append("password", password);
+
+                // Tạo một Map để lưu trữ quyền cho mỗi permission
+                Map<String, String> permissionMap = new HashMap<>();
+                permissionMap.put("Đặt phòng", "Khóa quyền");
+                permissionMap.put("Hóa đơn", "Khóa quyền");
+                permissionMap.put("Quản lý nhân viên", "Khóa quyền");
+                permissionMap.put("Thông tin khách hàng", "Khóa quyền");
+                permissionMap.put("Thống kê doanh thu", "Khóa quyền");
+                permissionMap.put("Quản lý hàng hóa", "Khóa quyền");
+                permissionMap.put("Quản lý dịch vụ", "Khóa quyền");
+                permissionMap.put("Quản lý tầng", "Khóa quyền");
+                permissionMap.put("Quản lý phòng", "Khóa quyền");
+                permissionMap.put("Quản lý loại phòng", "Khóa quyền");
+
+                document.append("permissions", permissionMap);
+
                 // Thêm Document vào bảng
                 collection.insertOne(document);
                 // Get userId
                 String userId = document.getObjectId("_id").toString();
                 // Sau khi thêm thành công, cập nhật lại dữ liệu trong bảng chính
-                User user = new User(userId, username, fullName, password);
+                Model_Account user = new Model_Account(userId, username, fullName, password);
                 formAccount.addUserToListAndTable(user);
             } catch (MongoException ex) {
                 JOptionPane.showMessageDialog(AddUserForm.this, "Lỗi khi cập nhật người dùng: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -500,11 +618,11 @@ class EditUserForm extends JFrame {
     private JTextField txtFullName;
     private JPasswordField txtPassword;
     private JPasswordField txtConfirmPassword;
-    private User userData;
+    private Model_Account userData;
     private int intdexRow;
     private Form_Account formAccount;
 
-    public EditUserForm(Form_Account formAccount, User userData, int intdexRow) {
+    public EditUserForm(Form_Account formAccount, Model_Account userData, int intdexRow) {
         this.userData = userData;
         this.intdexRow = intdexRow;
         this.formAccount = formAccount;
@@ -593,7 +711,7 @@ class EditUserForm extends JFrame {
             // Thực hiện cập nhật thông tin người dùng trong bảng
             UpdateResult updateResult = collection.updateOne(filter, updateDocument);
             if (updateResult.getModifiedCount() == 1) {
-                User updatedUser = new User(userId, username, fullName, password);
+                Model_Account updatedUser = new Model_Account(userId, username, fullName, password);
                 formAccount.updateUserToListAndTable(updatedUser, intdexRow);
                 System.out.println("Cập nhật người dùng thành công!");
             } else {
@@ -603,62 +721,5 @@ class EditUserForm extends JFrame {
             System.err.println("Lỗi khi cập nhật người dùng: " + ex.getMessage());
         }
         setVisible(false);
-    }
-}
-
-class User {
-
-    private String userId;
-    private String username;
-    private String fullName;
-    private String password;
-
-    public User(String userId, String username, String fullName, String password) {
-        this.userId = userId;
-        this.username = username;
-        this.fullName = fullName;
-        this.password = password;
-    }
-
-    // Getters and setters
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    @Override
-    public String toString() {
-        return "User{"
-                + "username='" + username + '\''
-                + ", fullName='" + fullName + '\''
-                + ", password='" + password + '\''
-                + '}';
     }
 }
