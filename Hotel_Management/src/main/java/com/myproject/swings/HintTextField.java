@@ -1,21 +1,15 @@
 package com.myproject.swings;
 
-import java.awt.Color;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Insets;
-import java.awt.RenderingHints;
-import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import javax.swing.*;
 
-public class SearchText extends JTextField {
+public class HintTextField extends JTextField {
+    private final String hint;
 
-    public SearchText() {
-        setBorder(new EmptyBorder(5, 5, 5, 5));
-        setSelectionColor(new Color(220, 204, 182));
+    public HintTextField(String hint, int columns) {
+        super(columns);
+        this.hint = hint;
     }
-    private final String hint = "Search here ...";
 
     @Override
     public void paint(Graphics g) {
