@@ -24,7 +24,6 @@ com\myproject\forms\Form_Goods$1.class
 com\myproject\models\Model_Card.class
 com\myproject\raven\chart\blankchart\SeriesSize.class
 com\myproject\forms\Form_RoomType$1.class
-com\myproject\forms\Form_state.class
 com\myproject\forms\Form_Service$3.class
 com\myproject\forms\Form_Account.class
 com\myproject\swings\GoodsTable$1.class

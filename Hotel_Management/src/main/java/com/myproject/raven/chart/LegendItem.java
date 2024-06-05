@@ -32,7 +32,7 @@ public class LegendItem extends javax.swing.JPanel {
         labelColor1 = new com.myproject.raven.chart.LabelColor();
         jLabel1 = new javax.swing.JLabel();
 
-        labelColor1.setBackground(new java.awt.Color(0, 255, 255));
+        labelColor1.setBackground(new java.awt.Color(255, 204, 204));
         labelColor1.setText("labelColor1");
 
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));

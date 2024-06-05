@@ -13,8 +13,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import static java.lang.Integer.parseInt;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
+import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -22,17 +23,10 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.table.DefaultTableModel;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.renderer.category.BarRenderer;
-
-import org.jfree.data.category.DefaultCategoryDataset;
-
 import org.jfree.data.general.DefaultPieDataset;
 
 
@@ -66,18 +60,18 @@ public class Form_Statement extends javax.swing.JPanel {
             cbBox1.addItem(temp);
             cbBox3.addItem(temp);
         }
-        cbBox1.setSelectedIndex(4);
+        cbBox1.setSelectedIndex(3);
         cbBox3.setSelectedIndex(5);
         
         cbBox2 = new JComboBox();
         cbBox4 = new JComboBox();
-        for (int i = 2018; i < 2025; i++){
+        for (int i = 2021; i < 2025; i++){
             String temp = "Năm " + i;
             cbBox2.addItem(temp);
             cbBox4.addItem(temp);
         }
-        cbBox2.setSelectedIndex(6);
-        cbBox4.setSelectedIndex(6);
+        cbBox2.setSelectedIndex(3);
+        cbBox4.setSelectedIndex(3);
         
         cbBox1.setBackground(new java.awt.Color(28, 181, 224));
         cbBox1.setForeground(java.awt.Color.WHITE);
@@ -107,12 +101,12 @@ public class Form_Statement extends javax.swing.JPanel {
         tabbedPane.addTab("Tổng doanh thu trong từng tháng", panel1);
 
         panel2 = new JPanel();
-        setDataToColumnChart1(panel2);
-        tabbedPane.addTab("Thành phần doanh thu trong tháng theo loại phòng", panel2);
+        setDataToColumnChart2(panel2);
+        tabbedPane.addTab("Thành phần doanh thu trong từng tháng theo loại dịch vụ", panel2);
         
         panel3 = new JPanel();
-        setDataToColumnChart1(panel3);
-        tabbedPane.addTab("Thành phần doanh thu trong tháng theo loại dịch vụ ", panel3);
+        setDataToColumnChart3(panel3);
+        tabbedPane.addTab("Thành phần doanh thu trong từng tháng theo loại phòng ", panel3);
         
         tabbedPane.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent evt) {
@@ -185,7 +179,7 @@ public class Form_Statement extends javax.swing.JPanel {
     
     private void tabChanged(ChangeEvent changeEvent) {
         
-        int index = tabbedPane.getSelectedIndex();
+//        int index = tabbedPane.getSelectedIndex();
 //        if (index != 0){
 //            label2.setVisible(false);
 //            cbBox3.setVisible(false);
@@ -203,28 +197,16 @@ public class Form_Statement extends javax.swing.JPanel {
     }
     
     private void btn1ActionPerformed(java.awt.event.ActionEvent evt){
-        setDataToColumnChart1(panel1);         
+        setDataToColumnChart1(panel1);   
+        setDataToColumnChart2(panel2);
+        setDataToColumnChart3(panel3);
     }
-
-    public void setDataToColumnChart(ColumnChart chart) {
-        
-        chart.addLegend("Income", new Color(245, 189, 135));
-        chart.addLegend("Expense", new Color(135, 189, 245));
-        chart.addLegend("Profit", new Color(189, 135, 245));
-
-        chart.addData(new ModelChart("January", new double[]{500, 200, 80}));
-        chart.addData(new ModelChart("February", new double[]{600, 750, 90}));
-        chart.addData(new ModelChart("March", new double[]{200, 350, 460}));
-        chart.addData(new ModelChart("April", new double[]{480, 150, 750}));
-        chart.addData(new ModelChart("May", new double[]{350, 540, 300}));
-        chart.addData(new ModelChart("June", new double[]{190, 280, 81}));
-    }
-    
+  
     public void setDataToColumnChart1(JPanel jpnItem) {
          
         ColumnChart chart = new ColumnChart();
         
-        chart.addLegend("Doanh thu", new Color(28, 181, 224));
+        chart.addLegend("Tổng doanh thu theo tháng", new Color(28, 181, 224));
    
         //start
         String monthStart = (String) cbBox1.getSelectedItem();
@@ -237,9 +219,18 @@ public class Form_Statement extends javax.swing.JPanel {
         monthEnd = monthEnd.substring(6);
         String yearEnd = (String) cbBox4.getSelectedItem();
         yearEnd = yearEnd.substring(4);
-            
+
         
-        for (int i = parseInt(monthStart); i <= parseInt(monthEnd); i++){          
+        int gap = (parseInt(yearEnd) - parseInt(yearStart)) * 12;
+        int temp = 0;
+        
+        for (int i = parseInt(monthStart); i <= parseInt(monthEnd)+gap; i++){          
+
+            if (i > 12){
+                i -= 12;
+                gap -= 12;
+                temp++;
+            }
             
             String timeStart;
             String timeEnd;
@@ -307,12 +298,13 @@ public class Form_Statement extends javax.swing.JPanel {
                 double income = document.getInteger("totalAmount") * 1.0; 
                 sum = sum + income;
             } 
-            chart.addData(new ModelChart("Tháng " + i, new double[]{sum}));
+            chart.addData(new ModelChart( i + "/" + (parseInt(yearStart)+temp), new double[]{sum}));
 
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }                 
-        }
+        }       
+        
         jpnItem.removeAll();
         jpnItem.setLayout(new CardLayout());               
         jpnItem.add(chart);       
@@ -324,7 +316,14 @@ public class Form_Statement extends javax.swing.JPanel {
          
         ColumnChart chart = new ColumnChart();
         
-        chart.addLegend("Doanh thu", new Color(28, 181, 224));
+        chart.addLegend("Massage", new Color(153,0,204));
+        chart.addLegend("Spa", new Color(102,102,102));
+        chart.addLegend("Chăm sóc da", new Color(255, 0, 0));
+        chart.addLegend("Nhà hàng", new Color(255, 153, 0));
+        chart.addLegend("Phòng họp, sự kiện", new Color(255,153,255));
+        chart.addLegend("Giặt là", new Color(0, 102, 102));
+        chart.addLegend("Đặt vé, tour du lịch", new Color(0, 204, 204));
+        chart.addLegend("Đưa đón sân bay", new Color(255, 204, 204));
    
         //start
         String monthStart = (String) cbBox1.getSelectedItem();
@@ -339,7 +338,16 @@ public class Form_Statement extends javax.swing.JPanel {
         yearEnd = yearEnd.substring(4);
             
         
-        for (int i = parseInt(monthStart); i <= parseInt(monthEnd); i++){          
+        int gap = (parseInt(yearEnd) - parseInt(yearStart)) * 12;
+        int temp = 0;
+        
+        for (int i = parseInt(monthStart); i <= parseInt(monthEnd)+gap; i++){          
+
+            if (i > 12){
+                i -= 12;
+                gap -= 12;
+                temp++;
+            }
             
             String timeStart;
             String timeEnd;
@@ -403,16 +411,67 @@ public class Form_Statement extends javax.swing.JPanel {
             
             FindIterable<Document> cursor = collection.find(filter);          
             
+            double sum1 = 0;
+            double sum2 = 0;
+            double sum3 = 0;
+            double sum4 = 0;
+            double sum5 = 0;
+            double sum6 = 0;
+            double sum7 = 0;
+            double sum8 = 0;
             
             for (Document document : cursor){
-                Document[] services = document.get("serviceList", Document[].class);
-                double sum = 0;
-                for (Document service : services){
+                List<Object> services = document.get("serviceList", new ArrayList<>());
+                for (Object object : services){
+                    Document service = (Document) object;
                     double income = service.getInteger("totalPrice") * 1.0; 
-                    sum = sum + income;
+                    String name = service.getString("name");
+                    switch (name){
+                        case "Dịch vụ massage":
+                        {
+                            sum1 += income;
+                            break;
+                        }
+                        case "Dịch vụ spa":
+                        {
+                            sum2 += income;
+                            break;
+                        }
+                        case "Dịch vụ chăm sóc da":
+                        {
+                            sum3 += income;
+                            break;
+                        }
+                        case "Dịch vụ nhà hàng":
+                        {
+                            sum4 += income;
+                            break;
+                        }
+                        case "Dịch vụ phòng họp và sự kiện":
+                        {
+                            sum5 += income;
+                            break;
+                        }
+                        case "Dịch vụ giặt là":
+                        {
+                            sum6 += income;
+                            break;
+                        }
+                        case "Dịch vụ đặt vé và tour du lịch":
+                        {
+                            sum7 += income;
+                            break;
+                        }
+                        case "Dịch vụ đưa đón sân bay":
+                        {
+                            sum8 += income;
+                            break;
+                        }
+                    }
                 }
             } 
-            //chart.addData(new ModelChart("Tháng " + i, new double[]{sum}));
+            chart.addData(new ModelChart( i + "/" + (parseInt(yearStart)+temp), new double[]{sum1, sum2, sum3, sum4, 
+                sum5, sum6, sum7, sum8}));
 
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -425,34 +484,199 @@ public class Form_Statement extends javax.swing.JPanel {
         jpnItem.repaint();
     }
     
-    public void setDataToPieChart(JPanel jpnItem) {
-     
-        //create dataset
-        DefaultPieDataset dataset = new DefaultPieDataset();
-        dataset.setValue( "IPhone 5s" , new Double( 20 ) );  
-        dataset.setValue( "SamSung Grand" , new Double( 20 ) );   
-        dataset.setValue( "MotoG" , new Double( 40 ) );    
-
-        //add dataset to chart
-        JFreeChart pieChart = ChartFactory.createPieChart(
-                "Biểu đồ thống kê doanh thu",   // chart title 
-                dataset,          // data    
-                true,             // include legend   
-                true, 
-                false);             
-
-        //add chart to panel
-        ChartPanel chartPanel = new ChartPanel(pieChart);
-        chartPanel.setPreferredSize(new Dimension(jpnItem.getWidth(), 321));
+    public void setDataToColumnChart3(JPanel jpnItem) {
+         
+        ColumnChart chart = new ColumnChart();
         
+        chart.addLegend("Phòng đôi", new Color(153,0,204));
+        chart.addLegend("Phòng đôi có hai giường đơn", new Color(102,102,102));
+        chart.addLegend("Phòng suite", new Color(255, 0, 0));
+        chart.addLegend("Phòng tiêu chuẩn", new Color(255, 153, 0));
+        chart.addLegend("Phòng sang trọng", new Color(255,153,255));
+        chart.addLegend("Phòng doanh nghiệp", new Color(0, 102, 102));
+        chart.addLegend("Phòng gia đình", new Color(0, 204, 204));
+        chart.addLegend("Phòng kết nối", new Color(255, 204, 204));
+        chart.addLegend("Phòng cao cấp trên tầng cao nhất", new Color(200, 204, 204));
+        chart.addLegend("Phòng trang trí đặc biệt dành cho cặp đôi mới cưới", new Color(255, 154, 204));
+        chart.addLegend("Phòng đơn", new Color(255, 104, 204));
+   
+        //start
+        String monthStart = (String) cbBox1.getSelectedItem();
+        monthStart = monthStart.substring(6);
+        String yearStart = (String) cbBox2.getSelectedItem();
+        yearStart = yearStart.substring(4);
+        
+        //end
+        String monthEnd = (String) cbBox3.getSelectedItem();
+        monthEnd = monthEnd.substring(6);
+        String yearEnd = (String) cbBox4.getSelectedItem();
+        yearEnd = yearEnd.substring(4);
+            
+        
+        int gap = (parseInt(yearEnd) - parseInt(yearStart)) * 12;
+        int temp = 0;
+        
+        for (int i = parseInt(monthStart); i <= parseInt(monthEnd)+gap; i++){          
+
+            if (i > 12){
+                i -= 12;
+                gap -= 12;
+                temp++;
+            }
+            
+            String timeStart;
+            String timeEnd;
+            
+            switch (i){
+                case 10:
+                case 11:
+                case 12:
+                {
+                    timeStart = yearStart + "-";
+                    timeEnd = yearEnd + "-";
+                    break;
+                }
+                default:
+                    timeStart = yearStart + "-0";
+                    timeEnd = yearEnd + "-0";
+                    break;
+            }
+            
+            switch (i) {
+                case 2:
+                    {
+                        timeStart += i + "-01T00:00:00.000+00:00";
+                        timeEnd += i + "-28T23:59:59.000+00:00";
+                        break;
+                    }
+                case 1:
+                case 3:
+                case 5:
+                case 7:
+                case 8:
+                case 10:
+                case 12:
+                    {
+                        timeStart += i + "-01T00:00:00.000+00:00";
+                        timeEnd += i + "-31T23:59:59.000+00:00";
+                        break;
+                    }
+                default:
+                    {
+                        timeStart += i + "-01T00:00:00.000+00:00";
+                        timeEnd += i + "-30T23:59:59.000+00:00";
+                        break;
+                    }
+            }
+      
+            Instant from = Instant.parse(timeStart);
+            Instant to = Instant.parse(timeEnd);
+            
+            try (MongoClient mongoClient = MongoClients.create("mongodb+srv://HotelGroup:xfwl2Y6oahXJugda@cluster0.awr6sf9.mongodb.net/")) {
+            // Chọn cơ sở dữ liệu
+            MongoDatabase database = mongoClient.getDatabase("Hotel_Management");
+            // Chọn bảng
+            MongoCollection<Document> collection = database.getCollection("Invoice");                   
+            
+            Document filter = new Document("$and", Arrays.asList(
+                Filters.eq("status", "Đã thanh toán"),
+                Filters.gte("checkOutDate", from),
+                Filters.lte("checkOutDate", to)
+            ));             
+            
+            FindIterable<Document> cursor = collection.find(filter);          
+            
+            double sum1 = 0;
+            double sum2 = 0;
+            double sum3 = 0;
+            double sum4 = 0;
+            double sum5 = 0;
+            double sum6 = 0;
+            double sum7 = 0;
+            double sum8 = 0;
+            double sum9 = 0;
+            double sum10 = 0;
+            double sum11 = 0;
+            
+            for (Document document : cursor){
+                List<Object> rooms = document.get("roomList", new ArrayList<>());
+                for (Object object : rooms){
+                    Document room = (Document) object;
+                    double income = room.getInteger("totalRoomPrice") * 1.0; 
+                    String type = room.getString("type");
+                    switch (type){
+                        case "SINGLE":
+                        {
+                            sum1 += income;
+                            break;
+                        }
+                        case "DOUBLE":
+                        {
+                            sum2 += income;
+                            break;
+                        }
+                        case "TWIN":
+                        {
+                            sum3 += income;
+                            break;
+                        }
+                        case "SUITE":
+                        {
+                            sum4 += income;
+                            break;
+                        }
+                        case "STANDARD":
+                        {
+                            sum5 += income;
+                            break;
+                        }
+                        case "DELUXE":
+                        {
+                            sum6 += income;
+                            break;
+                        }
+                        case "EXECUTIVE":
+                        {
+                            sum7 += income;
+                            break;
+                        }
+                        case "FAMILY":
+                        {
+                            sum8 += income;
+                            break;
+                        }
+                        case "CONNECTING":
+                        {
+                            sum9 += income;
+                            break;
+                        }
+                        case "PENTHOUSE_SUITE":
+                        {
+                            sum10 += income;
+                            break;
+                        }
+                        case "HONEYMOON_SUITE":
+                        {
+                            sum11 += income;
+                            break;
+                        }
+                    }
+                }
+            } 
+            chart.addData(new ModelChart( i + "/" + (parseInt(yearStart)+temp), new double[]{sum1, sum2, sum3, sum4, 
+                sum5, sum6, sum7, sum8, sum9, sum10, sum11}));
+
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }                 
+        }
         jpnItem.removeAll();
         jpnItem.setLayout(new CardLayout());               
-        jpnItem.add(chartPanel);       
+        jpnItem.add(chart);       
         jpnItem.validate();
         jpnItem.repaint();
     }
-    
-    
+     
     private JTabbedPane tabbedPane;
     private JPanel panel1;  
     private JPanel panel2;

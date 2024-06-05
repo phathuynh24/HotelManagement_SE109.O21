@@ -17,7 +17,7 @@ public class ColumnChart extends javax.swing.JPanel {
 
     private List<ModelLegend> legends = new ArrayList<>();
     private List<ModelChart> model = new ArrayList<>();
-    private final int seriesSize = 20;
+    private final int seriesSize = 15;
     private final int seriesSpace = 6;
 
     public ColumnChart() {
@@ -66,33 +66,37 @@ public class ColumnChart extends javax.swing.JPanel {
     private void initComponents() {
 
         blankPlotChart = new com.myproject.raven.chart.blankchart.BlankPlotChart();
+        jScrollPane1 = new javax.swing.JScrollPane();
         panelLegend = new javax.swing.JPanel();
 
         blankPlotChart.setBackground(new java.awt.Color(153, 255, 255));
 
         panelLegend.setBackground(new java.awt.Color(28, 181, 224));
+        jScrollPane1.setViewportView(panelLegend);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panelLegend, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jScrollPane1)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(blankPlotChart, javax.swing.GroupLayout.PREFERRED_SIZE, 900, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(blankPlotChart, javax.swing.GroupLayout.PREFERRED_SIZE, 922, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(blankPlotChart, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
-                .addComponent(panelLegend, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(blankPlotChart, javax.swing.GroupLayout.PREFERRED_SIZE, 339, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(18, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private com.myproject.raven.chart.blankchart.BlankPlotChart blankPlotChart;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel panelLegend;
     // End of variables declaration//GEN-END:variables
 }
