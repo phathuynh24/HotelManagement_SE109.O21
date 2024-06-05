@@ -1,7 +1,20 @@
 package com.myproject.forms;
 
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.myproject.raven.chart.ColumnChart;
+import com.myproject.raven.chart.ModelChart;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import static java.lang.Integer.parseInt;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.Date;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -9,6 +22,9 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.table.DefaultTableModel;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -38,22 +54,6 @@ public class Form_Statement extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
 
-        tabbedPane = new JTabbedPane();
-        tabbedPane.setBackground(new java.awt.Color(28, 181, 224));
-        tabbedPane.setForeground(java.awt.Color.WHITE);
-        
-        panel1 = new JPanel();
-        setDataToColumnChart(panel1, "Tháng");
-        tabbedPane.addTab("Tổng doanh thu trong từng tháng", panel1);
-
-        panel2 = new JPanel();
-        setDataToPieChart(panel2);
-        tabbedPane.addTab("Thành phần doanh thu trong tháng theo loại phòng", panel2);
-        
-        panel3 = new JPanel();
-        setDataToPieChart(panel3);
-        tabbedPane.addTab("Thành phần doanh thu trong tháng theo loại dịch vụ ", panel3);
-
         label1 = new JLabel();
         label1.setText("Chọn thời gian bắt đầu:");
         label2 = new JLabel();
@@ -66,18 +66,18 @@ public class Form_Statement extends javax.swing.JPanel {
             cbBox1.addItem(temp);
             cbBox3.addItem(temp);
         }
-        cbBox1.setSelectedIndex(0);
-        cbBox3.setSelectedIndex(0);
+        cbBox1.setSelectedIndex(4);
+        cbBox3.setSelectedIndex(5);
         
         cbBox2 = new JComboBox();
         cbBox4 = new JComboBox();
-        for (int i = 2018; i < 2024; i++){
+        for (int i = 2018; i < 2025; i++){
             String temp = "Năm " + i;
             cbBox2.addItem(temp);
             cbBox4.addItem(temp);
         }
-        cbBox2.setSelectedIndex(0);
-        cbBox4.setSelectedIndex(0);
+        cbBox2.setSelectedIndex(6);
+        cbBox4.setSelectedIndex(6);
         
         cbBox1.setBackground(new java.awt.Color(28, 181, 224));
         cbBox1.setForeground(java.awt.Color.WHITE);
@@ -92,6 +92,27 @@ public class Form_Statement extends javax.swing.JPanel {
         btn1.setText("Cập nhật thông tin cho biểu đồ");
         btn1.setBackground(new java.awt.Color(28, 181, 224));
         btn1.setForeground(java.awt.Color.WHITE); 
+        btn1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn1ActionPerformed(evt);
+            }
+        });
+        
+        tabbedPane = new JTabbedPane();
+        tabbedPane.setBackground(new java.awt.Color(28, 181, 224));
+        tabbedPane.setForeground(java.awt.Color.WHITE);
+        
+        panel1 = new JPanel();
+        setDataToColumnChart1(panel1);
+        tabbedPane.addTab("Tổng doanh thu trong từng tháng", panel1);
+
+        panel2 = new JPanel();
+        setDataToColumnChart1(panel2);
+        tabbedPane.addTab("Thành phần doanh thu trong tháng theo loại phòng", panel2);
+        
+        panel3 = new JPanel();
+        setDataToColumnChart1(panel3);
+        tabbedPane.addTab("Thành phần doanh thu trong tháng theo loại dịch vụ ", panel3);
         
         tabbedPane.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent evt) {
@@ -165,47 +186,241 @@ public class Form_Statement extends javax.swing.JPanel {
     private void tabChanged(ChangeEvent changeEvent) {
         
         int index = tabbedPane.getSelectedIndex();
-        if (index != 0){
-            label2.setVisible(false);
-            cbBox3.setVisible(false);
-            cbBox4.setVisible(false);
-            
-            label1.setText("Chọn thời gian thống kê:");
-        }
-        else {
-            label2.setVisible(true);
-            cbBox3.setVisible(true);
-            cbBox4.setVisible(true);
-            
-            label1.setText("Chọn thời gian bắt đầu:");
-        }
+//        if (index != 0){
+//            label2.setVisible(false);
+//            cbBox3.setVisible(false);
+//            cbBox4.setVisible(false);
+//            
+//            label1.setText("Chọn thời gian thống kê:");
+//        }
+//        else {
+//            label2.setVisible(true);
+//            cbBox3.setVisible(true);
+//            cbBox4.setVisible(true);
+//            
+//            label1.setText("Chọn thời gian bắt đầu:");
+//        }
+    }
+    
+    private void btn1ActionPerformed(java.awt.event.ActionEvent evt){
+        setDataToColumnChart1(panel1);         
     }
 
-    public void setDataToColumnChart(JPanel jpnItem, String type) {
+    public void setDataToColumnChart(ColumnChart chart) {
         
-        //create dataset
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        for (int i = 1; i < 13; i++){
-            dataset.addValue(1000000 * i, "Doanh thu", type + " " + i);
-        }
-        
-        //add dataset to chart
-        JFreeChart barChart = ChartFactory.createBarChart(
-                "Biểu đồ thống kê doanh thu",
-                type, "VNĐ",
-                dataset, PlotOrientation.VERTICAL, false, true, false);       
-        
-        //set color for column chart
-        BarRenderer r = (BarRenderer)barChart.getCategoryPlot().getRenderer();
-        r.setSeriesPaint(0, new java.awt.Color(28, 181, 224));
+        chart.addLegend("Income", new Color(245, 189, 135));
+        chart.addLegend("Expense", new Color(135, 189, 245));
+        chart.addLegend("Profit", new Color(189, 135, 245));
 
-        //add chart to panel
-        ChartPanel chartPanel = new ChartPanel(barChart);
-        chartPanel.setPreferredSize(new Dimension(jpnItem.getWidth(), 321));
+        chart.addData(new ModelChart("January", new double[]{500, 200, 80}));
+        chart.addData(new ModelChart("February", new double[]{600, 750, 90}));
+        chart.addData(new ModelChart("March", new double[]{200, 350, 460}));
+        chart.addData(new ModelChart("April", new double[]{480, 150, 750}));
+        chart.addData(new ModelChart("May", new double[]{350, 540, 300}));
+        chart.addData(new ModelChart("June", new double[]{190, 280, 81}));
+    }
+    
+    public void setDataToColumnChart1(JPanel jpnItem) {
+         
+        ColumnChart chart = new ColumnChart();
         
+        chart.addLegend("Doanh thu", new Color(28, 181, 224));
+   
+        //start
+        String monthStart = (String) cbBox1.getSelectedItem();
+        monthStart = monthStart.substring(6);
+        String yearStart = (String) cbBox2.getSelectedItem();
+        yearStart = yearStart.substring(4);
+        
+        //end
+        String monthEnd = (String) cbBox3.getSelectedItem();
+        monthEnd = monthEnd.substring(6);
+        String yearEnd = (String) cbBox4.getSelectedItem();
+        yearEnd = yearEnd.substring(4);
+            
+        
+        for (int i = parseInt(monthStart); i <= parseInt(monthEnd); i++){          
+            
+            String timeStart;
+            String timeEnd;
+            
+            switch (i){
+                case 10:
+                case 11:
+                case 12:
+                {
+                    timeStart = yearStart + "-";
+                    timeEnd = yearEnd + "-";
+                    break;
+                }
+                default:
+                    timeStart = yearStart + "-0";
+                    timeEnd = yearEnd + "-0";
+                    break;
+            }
+            
+            switch (i) {
+                case 2:
+                    {
+                        timeStart += i + "-01T00:00:00.000+00:00";
+                        timeEnd += i + "-28T23:59:59.000+00:00";
+                        break;
+                    }
+                case 1:
+                case 3:
+                case 5:
+                case 7:
+                case 8:
+                case 10:
+                case 12:
+                    {
+                        timeStart += i + "-01T00:00:00.000+00:00";
+                        timeEnd += i + "-31T23:59:59.000+00:00";
+                        break;
+                    }
+                default:
+                    {
+                        timeStart += i + "-01T00:00:00.000+00:00";
+                        timeEnd += i + "-30T23:59:59.000+00:00";
+                        break;
+                    }
+            }
+      
+            Instant from = Instant.parse(timeStart);
+            Instant to = Instant.parse(timeEnd);
+            
+            try (MongoClient mongoClient = MongoClients.create("mongodb+srv://HotelGroup:xfwl2Y6oahXJugda@cluster0.awr6sf9.mongodb.net/")) {
+            // Chọn cơ sở dữ liệu
+            MongoDatabase database = mongoClient.getDatabase("Hotel_Management");
+            // Chọn bảng
+            MongoCollection<Document> collection = database.getCollection("Invoice");
+            
+            Document filter = new Document("$and", Arrays.asList(
+                Filters.eq("status", "Đã thanh toán"),
+                Filters.gte("checkOutDate", from),
+                Filters.lte("checkOutDate", to)
+            ));  
+                  
+            FindIterable<Document> cursor = collection.find(filter);           
+            double sum = 0;
+            for (Document document : cursor){
+                double income = document.getInteger("totalAmount") * 1.0; 
+                sum = sum + income;
+            } 
+            chart.addData(new ModelChart("Tháng " + i, new double[]{sum}));
+
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }                 
+        }
         jpnItem.removeAll();
         jpnItem.setLayout(new CardLayout());               
-        jpnItem.add(chartPanel);       
+        jpnItem.add(chart);       
+        jpnItem.validate();
+        jpnItem.repaint();
+    }
+    
+    public void setDataToColumnChart2(JPanel jpnItem) {
+         
+        ColumnChart chart = new ColumnChart();
+        
+        chart.addLegend("Doanh thu", new Color(28, 181, 224));
+   
+        //start
+        String monthStart = (String) cbBox1.getSelectedItem();
+        monthStart = monthStart.substring(6);
+        String yearStart = (String) cbBox2.getSelectedItem();
+        yearStart = yearStart.substring(4);
+        
+        //end
+        String monthEnd = (String) cbBox3.getSelectedItem();
+        monthEnd = monthEnd.substring(6);
+        String yearEnd = (String) cbBox4.getSelectedItem();
+        yearEnd = yearEnd.substring(4);
+            
+        
+        for (int i = parseInt(monthStart); i <= parseInt(monthEnd); i++){          
+            
+            String timeStart;
+            String timeEnd;
+            
+            switch (i){
+                case 10:
+                case 11:
+                case 12:
+                {
+                    timeStart = yearStart + "-";
+                    timeEnd = yearEnd + "-";
+                    break;
+                }
+                default:
+                    timeStart = yearStart + "-0";
+                    timeEnd = yearEnd + "-0";
+                    break;
+            }
+            
+            switch (i) {
+                case 2:
+                    {
+                        timeStart += i + "-01T00:00:00.000+00:00";
+                        timeEnd += i + "-28T23:59:59.000+00:00";
+                        break;
+                    }
+                case 1:
+                case 3:
+                case 5:
+                case 7:
+                case 8:
+                case 10:
+                case 12:
+                    {
+                        timeStart += i + "-01T00:00:00.000+00:00";
+                        timeEnd += i + "-31T23:59:59.000+00:00";
+                        break;
+                    }
+                default:
+                    {
+                        timeStart += i + "-01T00:00:00.000+00:00";
+                        timeEnd += i + "-30T23:59:59.000+00:00";
+                        break;
+                    }
+            }
+      
+            Instant from = Instant.parse(timeStart);
+            Instant to = Instant.parse(timeEnd);
+            
+            try (MongoClient mongoClient = MongoClients.create("mongodb+srv://HotelGroup:xfwl2Y6oahXJugda@cluster0.awr6sf9.mongodb.net/")) {
+            // Chọn cơ sở dữ liệu
+            MongoDatabase database = mongoClient.getDatabase("Hotel_Management");
+            // Chọn bảng
+            MongoCollection<Document> collection = database.getCollection("Invoice");                   
+            
+            Document filter = new Document("$and", Arrays.asList(
+                Filters.eq("status", "Đã thanh toán"),
+                Filters.gte("checkOutDate", from),
+                Filters.lte("checkOutDate", to)
+            ));             
+            
+            FindIterable<Document> cursor = collection.find(filter);          
+            
+            
+            for (Document document : cursor){
+                Document[] services = document.get("serviceList", Document[].class);
+                double sum = 0;
+                for (Document service : services){
+                    double income = service.getInteger("totalPrice") * 1.0; 
+                    sum = sum + income;
+                }
+            } 
+            //chart.addData(new ModelChart("Tháng " + i, new double[]{sum}));
+
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }                 
+        }
+        jpnItem.removeAll();
+        jpnItem.setLayout(new CardLayout());               
+        jpnItem.add(chart);       
         jpnItem.validate();
         jpnItem.repaint();
     }

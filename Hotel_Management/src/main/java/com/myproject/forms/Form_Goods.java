@@ -9,18 +9,35 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.myproject.swings.GoodsForm;
 import com.myproject.swings.GoodsTable;
+import com.myproject.swings.HintTextField;
 import com.myproject.swings.SearchText;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.Random;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
 import org.bson.Document;
 
 public class Form_Goods extends javax.swing.JPanel {
@@ -78,7 +95,7 @@ public class Form_Goods extends javax.swing.JPanel {
         importButton.setText("Nhập hàng");
         importButton.setBackground(new java.awt.Color(28, 181, 224));
         importButton.setForeground(new java.awt.Color(255, 255, 255));
-        
+
         deleteButton.setText("Xóa hàng hóa");
         deleteButton.setBackground(new java.awt.Color(28, 181, 224));
         deleteButton.setForeground(new java.awt.Color(255, 255, 255));
@@ -114,6 +131,8 @@ public class Form_Goods extends javax.swing.JPanel {
                                                 .addComponent(addButton)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(deleteButton)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(importButton)
                                                 .addGap(20, 20, 20))))
         );
         layout.setVerticalGroup(
@@ -124,6 +143,7 @@ public class Form_Goods extends javax.swing.JPanel {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(addButton)
+                                        .addComponent(importButton)
                                         .addComponent(deleteButton))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
@@ -149,6 +169,14 @@ public class Form_Goods extends javax.swing.JPanel {
                 }
             }
         });
+
+        importButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                importGoods();
+            }
+        });
+
         searchField.addKeyListener(new java.awt.event.KeyAdapter() {
             @Override
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -170,22 +198,32 @@ public class Form_Goods extends javax.swing.JPanel {
         JFrame addProductFrame = new JFrame("Thêm sản phẩm mới");
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         // Create components for the frame
-        nameField = new javax.swing.JTextField(20);
+        sellPriceField = new HintTextField("Nhập đơn giá bán", 20);
+        importPriceField = new HintTextField("Nhập đơn giá nhập", 20);
+        quantityField = new HintTextField("Nhập số lượng", 20);
+        nameField = new HintTextField("Nhập tên hàng hóa", 20);
+        unitField = new HintTextField("Nhập đơn vị tính", 20);
+        codeField = new HintTextField("Mã hàng hóa", 20);
         descriptionArea = new javax.swing.JTextArea(4, 20);
         descriptionArea.setLineWrap(true);
         descriptionArea.setWrapStyleWord(true);
-        quantityField = new javax.swing.JTextField(20);
-        importPriceField = new javax.swing.JTextField(20);
-        sellPriceField = new javax.swing.JTextField(20);
-        codeField = new javax.swing.JTextField(20);
+
         codeField.setEditable(false);
         codeField.setEnabled(false);
         codeField.setText(generateRandomCode());
-        unitField = new javax.swing.JTextField(20);
+
+        //Set fillter to text field
+        DocumentFilter numberFilter = new NumberFilter();
+
+        ((AbstractDocument) sellPriceField.getDocument()).setDocumentFilter(numberFilter);
+        ((AbstractDocument) importPriceField.getDocument()).setDocumentFilter(numberFilter);
+        ((AbstractDocument) quantityField.getDocument()).setDocumentFilter(numberFilter);
+
         // Create buttons for the frame
         javax.swing.JButton saveButton = new javax.swing.JButton("Lưu");
         javax.swing.JButton cancelButton = new javax.swing.JButton("Hủy");
 
+        //Set up hint text        
         buttonPanel.add(saveButton);
         buttonPanel.add(cancelButton);
 
@@ -208,6 +246,8 @@ public class Form_Goods extends javax.swing.JPanel {
         addProductFrame.setLayout(new java.awt.GridBagLayout());
         java.awt.GridBagConstraints gbc = new java.awt.GridBagConstraints();
         gbc.insets = new java.awt.Insets(5, 5, 5, 5); // Thiết lập khoảng cách giữa các thành phần
+
+        gbc.anchor = java.awt.GridBagConstraints.WEST; // Căn trái cho tất cả các label
 
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -239,7 +279,7 @@ public class Form_Goods extends javax.swing.JPanel {
 
         gbc.gridx = 0;
         gbc.gridy = 4;
-        addProductFrame.add(new JLabel("Tồn kho:"), gbc);
+        addProductFrame.add(new JLabel("Số lượng ban đầu:"), gbc);
 
         gbc.gridx = 1;
         addProductFrame.add(quantityField, gbc);
@@ -250,13 +290,6 @@ public class Form_Goods extends javax.swing.JPanel {
 
         gbc.gridx = 1;
         addProductFrame.add(unitField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 6;
-        addProductFrame.add(new JLabel("Mô tả:"), gbc);
-
-        gbc.gridx = 1;
-        addProductFrame.add(descriptionArea, gbc);
 
         // Thêm nút "Lưu" và "Hủy"
         gbc.gridx = 0;
@@ -274,7 +307,6 @@ public class Form_Goods extends javax.swing.JPanel {
     private void saveProduct() {
         // Lấy thông tin từ các trường và thêm vào MongoDB
         String name = nameField.getText();
-        String description = descriptionArea.getText();
         double importPrice = Double.parseDouble(importPriceField.getText());
         double sellPrice = Double.parseDouble(sellPriceField.getText());
         String code = codeField.getText();
@@ -282,11 +314,16 @@ public class Form_Goods extends javax.swing.JPanel {
         int quantity = Integer.parseInt(quantityField.getText());
 
         // Thêm sản phẩm vào MongoDB (sử dụng phương thức addGoodsToMongoDB() đã được định nghĩa trong phần trước)
-        addGoodsToMongoDB(code, name, description, importPrice, sellPrice, unit, quantity);
+        addGoodsToMongoDB(code, name, importPrice, sellPrice, unit, quantity);
         loadGoodsDataFromMongoDB();
     }
 
-    private void addGoodsToMongoDB(String code, String name, String description, double importPrice, double sellPrice, String unit, int quantity) {
+    private void importGoods() {
+        ImportCommodityWindow importForm = new ImportCommodityWindow();
+        importForm.setVisible(true);
+    }
+
+    private void addGoodsToMongoDB(String code, String name, double importPrice, double sellPrice, String unit, int quantity) {
         String uri = "mongodb+srv://HotelGroup:xfwl2Y6oahXJugda@cluster0.awr6sf9.mongodb.net/";
 
         try (MongoClient mongoClient = MongoClients.create(uri)) {
@@ -304,7 +341,6 @@ public class Form_Goods extends javax.swing.JPanel {
             document.put("unit", unit);
             document.put("importPrice", importPrice);
             document.put("sellPrice", sellPrice);
-            document.put("description", description);
             // Thêm document vào collection
             collection.insertOne(document);
         } catch (Exception e) {
@@ -362,7 +398,7 @@ public class Form_Goods extends javax.swing.JPanel {
                 String code = doc.getString("code");
                 String name = doc.getString("name");
                 String description = doc.getString("description");
-                String importPrice = currencyFormat.format(doc.getDouble("importPrice"));                
+                String importPrice = currencyFormat.format(doc.getDouble("importPrice"));
                 String sellPrice = currencyFormat.format(doc.getDouble("sellPrice"));
                 String unit = doc.getString("unit");
                 int quantity = doc.getInteger("quantity");
@@ -374,23 +410,132 @@ public class Form_Goods extends javax.swing.JPanel {
             e.printStackTrace();
         }
     }
+
+    public class NumberFilter extends DocumentFilter {
+
+        @Override
+        public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+            if (isNumeric(string)) {
+                super.insertString(fb, offset, string, attr);
+            }
+        }
+
+        @Override
+        public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+            if (isNumeric(text)) {
+                super.replace(fb, offset, length, text, attrs);
+            }
+        }
+
+        private boolean isNumeric(String text) {
+            return text.matches("\\d*"); // Chỉ cho phép nhập các ký tự số
+        }
+    }
+
+    public class ImportCommodityWindow extends JFrame {
+
+        public ImportCommodityWindow() {
+            setTitle("Import Commodity");
+            //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            setSize(800, 400);
+            setLocationRelativeTo(null);
+
+            // Panel chính chứa hai bảng và các nút chức năng
+            JPanel mainPanel = new JPanel(new BorderLayout());
+
+            // Tạo bảng "Danh Sách Hàng Hóa Nhập Vào"
+            String[] columnNames1 = {"#", "Mã hàng hóa", "Tên hàng hóa", "Số lượng", "Đơn vị"};
+            Object[][] data1 = {
+                {1, "HH101", "Cocacola", 20, "Chai"},
+                {2, "HH104", "Bánh ngọt", 20, "Cái"},
+                {3, "HH103", "Pepsi", 40, "Chai"}
+            };
+            JTable table1 = new JTable(new DefaultTableModel(data1, columnNames1));
+            JScrollPane scrollPane1 = new JScrollPane(table1);
+            JPanel panel1 = new JPanel(new BorderLayout());
+            panel1.setBorder(BorderFactory.createTitledBorder("DANH SÁCH HÀNG HÓA NHẬP VÀO"));
+            panel1.add(scrollPane1, BorderLayout.CENTER);
+
+            // Tạo bảng "Danh Sách Hàng Hóa Trong Kho"
+            String[] columnNames2 = {"Mã", "Tên", "Tồn kho", "Đơn vị", "Chọn"};
+            Object[][] data2 = {
+                {"HH101", "Cocacola", 157, "Chai", Boolean.TRUE},
+                {"HH102", "Nước suối", 73, "Chai", Boolean.FALSE},
+                {"HH103", "Pepsi", 50, "Chai", Boolean.TRUE},
+                {"HH104", "Bánh ngọt", 20, "Cái", Boolean.TRUE}
+            };
+            JTable table2 = new JTable(new DefaultTableModel(data2, columnNames2) {
+                @Override
+                public Class<?> getColumnClass(int column) {
+                    switch (column) {
+                        case 2:
+                            return Integer.class;
+                        case 4:
+                            return Boolean.class;
+                        default:
+                            return String.class;
+                    }
+                }
+            });
+            JScrollPane scrollPane2 = new JScrollPane(table2);
+            JPanel panel2 = new JPanel(new BorderLayout());
+            panel2.setBorder(BorderFactory.createTitledBorder("DANH SÁCH HÀNG HÓA TRONG KHO"));
+            panel2.add(scrollPane2, BorderLayout.CENTER);
+
+            // Thêm hai bảng vào panel chính
+            JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, panel1, panel2);
+            splitPane.setResizeWeight(0.5);
+            mainPanel.add(splitPane, BorderLayout.CENTER);
+
+            // Tạo các nút chức năng
+            JPanel buttonPanel = new JPanel();
+            JButton cancelButton = new JButton("Hủy");
+            JButton importButton = new JButton("Nhập hàng");
+
+            // Thêm hành động cho nút "Hủy"
+            cancelButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    setVisible(false);
+                }
+            });
+
+            // Thêm hành động cho nút "Nhập hàng"
+            importButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // Thêm logic nhập hàng vào đây
+                    JOptionPane.showMessageDialog(null, "Hàng hóa đã được nhập vào kho!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                }
+            });
+
+            buttonPanel.add(cancelButton);
+            buttonPanel.add(importButton);
+            mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+            // Thêm panel chính vào cửa sổ
+            add(mainPanel);
+        }
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
-    private javax.swing.JButton addButton;
-    private javax.swing.JButton importButton;
-    private javax.swing.JButton deleteButton;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField searchField;
+    private JButton addButton;
+    private JButton importButton;
+    private JButton deleteButton;
+    private JScrollPane jScrollPane1;
+    private JTextField searchField;
     private GoodsTable goodsTable;
-    private javax.swing.JTextField nameField;
-    private javax.swing.JTextArea descriptionArea;
-    private javax.swing.JTextField sellPriceField;
-    private javax.swing.JTextField quantityField;
-    private javax.swing.JTextField importPriceField;
-    private javax.swing.JTextField codeField;
-    private javax.swing.JTextField unitField;
+    private HintTextField nameField;
+    private JTextArea descriptionArea;
+    private HintTextField sellPriceField;
+    private HintTextField quantityField;
+    private HintTextField importPriceField;
+    private HintTextField codeField;
+    private HintTextField unitField;
     private DefaultTableModel model;
+    private GoodsForm goodsForm;
     // End of variables declaration                   
 
 }
